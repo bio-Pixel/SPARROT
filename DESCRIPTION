@@ -19,6 +19,7 @@ Imports:
     concaveman,
     ggnewscale,
     cowplot,
+    Nebulosa,
     fields
 Encoding: UTF-8
 License: GPL-3
