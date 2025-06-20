@@ -107,7 +107,7 @@ computeGeneCelltypeOverlap <- function(object, gene, celltype) {
 
   # Extract gene expression and binarize
   gene_expr <- object@expr[gene, ]
-  gene_bin <- classify_continuous_vector(gene_expr)
+  gene_bin <- binarizeByGMM(gene_expr)
 
   # Extract cell type binary vector
   bin_col <- paste0("bin_", celltype)
