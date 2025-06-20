@@ -89,3 +89,36 @@ evaluate_bidirectional_nn_distance <- function(bin1, bin2, coords, bin_size_um =
     mean_nn2to1_um = mean_nn2to1 * bin_size_um, sd_nn2to1_um = sd_nn2to1 * bin_size_um, se_nn2to1_um = se_nn2to1 * bin_size_um
   )
 }
+
+#' Compute overlap between gene expression and cell type presence
+#'
+#' @param object A SparrotObj object
+#' @param gene A gene symbol (character)
+#' @param celltype A cell type name matching object@celltypes
+#' @return A data frame with Dice, Jaccard, and MCC metrics
+#' @export
+computeGeneCelltypeOverlap <- function(object, gene, celltype) {
+  if (!gene %in% rownames(object@expr)) {
+    stop("Gene not found in expression matrix: ", gene)
+  }
+  if (!celltype %in% object@celltypes) {
+    stop("Cell type not found in object: ", celltype)
+  }
+
+  # Extract gene expression and binarize
+  gene_expr <- object@expr[gene, ]
+  gene_bin <- classify_continuous_vector(gene_expr)
+
+  # Extract cell type binary vector
+  bin_col <- paste0("bin_", celltype)
+  if (!bin_col %in% colnames(object@meta.data)) {
+    stop("Binarized cell type column not found in metadata: ", bin_col)
+  }
+  cell_bin <- as.logical(object@meta.data[[bin_col]])
+
+  # Compute overlap metrics
+  res <- evaluate_overlap_metrics(gene_bin, cell_bin, coords = object@coords, expand_bin_dist = 0)
+  return(res)
+}
+
+  
