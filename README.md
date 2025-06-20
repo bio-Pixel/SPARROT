@@ -1,3 +1,3 @@
 # SPARROT
 install.packages("devtools")
-devtools::install_github("bio-Pixel/SPARROW")
+devtools::install_github("bio-Pixel/SPARROT")
