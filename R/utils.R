@@ -1,5 +1,5 @@
 
-classify_continuous_vector <- function(score_vector) {
+binarizeByGMM <- function(score_vector) {
   if (!is.numeric(score_vector)) {
     stop("Input must be a numeric vector")
   }
