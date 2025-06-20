@@ -126,3 +126,76 @@ plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline 
 
   return(base)
 }
+
+#' Spatial Feature Plot using Nebulosa
+#'
+#' @param object A SparrotObj object
+#' @param features Character vector of gene names
+#' @return A ggplot object from Nebulosa::plot_density
+#' @export
+spFeatureDensityPlot <- function(object, features, outline = TRUE, raster = TRUE, pt.size = 1,
+                         method = c("ks", "wkde"), joint = FALSE, ncol = NULL) {
+  if (!requireNamespace("Nebulosa", quietly = TRUE)) {
+    stop("Please install the Nebulosa package first.")
+  }
+  if (!requireNamespace("Seurat", quietly = TRUE)) {
+    stop("Please install the Seurat package.")
+  }
+
+  expr <- object@expr
+  coords <- object@coords
+
+  missing_genes <- setdiff(features, rownames(expr))
+  if (length(missing_genes) > 0) {
+    stop("These features are not found in the expression matrix: ", paste(missing_genes, collapse = ", "))
+  }
+
+  expr_mat <- as.matrix(expr[features, , drop = FALSE])
+  seu <- Seurat::CreateSeuratObject(counts = CreateAssayObject(expr_mat))
+
+  colnames(coords) = c("pixel_1","pixel_2")
+  seu@reductions$pixel = Seurat::CreateDimReducObject(coords, key = "pixel")
+
+  Seurat::DefaultAssay(seu) <- "RNA"
+
+  if (joint){
+    pp = Nebulosa::plot_density(seu, reduction = "pixel", features, 
+                          size = pt.size,  raster = raster, method = method,
+                          joint = joint)
+    return(pp)
+  }
+
+  if (outline) {
+    hull_df <- concave_dat(coords = object@coords)
+    p = lapply(features,function(z){
+              p = Nebulosa::plot_density(seu, reduction = "pixel", z, 
+                          size = pt.size,  raster = raster, method = method)+ 
+              ggplot2::coord_fixed()+
+              ggplot2::scale_color_gradientn(colours = c( "white","#D9AAD7", "#A765B1"))+ 
+              geom_polygon(data = hull_df, aes(x = V1, y = V2), color = "black", alpha = 0)+
+              theme_bw() +
+              theme(axis.title = element_blank(),
+                    axis.ticks = element_blank(),
+                    axis.text = element_blank())
+              return(p)
+          })
+    pp = patchwork::wrap_plots(p, ncol = ncol)
+  }else{
+    p = lapply(features,function(z){
+              p = Nebulosa::plot_density(seu, reduction = "pixel", z, 
+                          size = pt.size,  raster = raster, method = method)+ 
+              ggplot2::coord_fixed()+
+              ggplot2::theme_void()+
+              ggplot2::scale_color_gradientn(colours = c( "white", "#D9AAD7", "#A765B1"))+ 
+              theme_bw() +
+              theme(axis.title = element_blank(),
+                    axis.ticks = element_blank(),
+                    axis.text = element_blank())
+              return(p)
+          })
+    pp = patchwork::wrap_plots(p, ncol = ncol)   
+  }
+
+  return(pp)
+}
+
