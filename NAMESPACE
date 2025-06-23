@@ -19,6 +19,7 @@ export(plot_expand_chebyshev)
 export(concave_dat)
 export(spFeatureDensityPlot)
 export(computeGeneCelltypeOverlap)
+export(computePairwiseCelltypeOverlap)
 
 
 importFrom(ggplot2, ggplot, aes, geom_point, geom_polygon, scale_color_manual,
