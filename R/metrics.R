@@ -1,6 +1,65 @@
+#' Compute pairwise overlap between cell types
+#'
+#' @param object A SparrotObj object
+#' @param metric One of "dice", "jaccard", or "mcc"
+#' @param ncore Number of cores to use (set to NULL or 1 for sequential execution)
+#' @return A data.frame with celltype pairs, overlap values, and p-values
+#' @export
+computePairwiseCelltypeOverlap <- function(object, metric = c("dice", "jaccard", "mcc"), ncore = NULL) {
+  metric <- match.arg(metric)
+  ct <- object@celltypes
+  combos <- t(combn(ct, 2))
 
-evaluate_overlap_metrics <- function(bin1, bin2, coords = NULL, bin_size_um = 50, expand_bin_dist = 1,
-                                     n_perm = 1000, seed = 123) {
+  meta_bin <- as.data.frame(S4Vectors::as.data.frame(object@meta.data[, grep("^bin_", colnames(object@meta.data))]))
+  coords <- object@coords
+
+  pb <- txtProgressBar(min = 0, max = nrow(combos), style = 3)
+
+  do_one <- function(pair) {
+    bin1 <- as.logical(meta_bin[[paste0("bin_", pair[1])]])
+    bin2 <- as.logical(meta_bin[[paste0("bin_", pair[2])]])
+    res <- evaluate_overlap_metrics(
+      bin1, bin2,
+      coords = coords,
+      expand_bin_dist = 1
+    )
+    setTxtProgressBar(pb, getTxtProgressBar(pb) + 1)
+    data.frame(celltype1 = pair[1], celltype2 = pair[2],
+               value = res[[metric]],
+               pvalue = res[[paste0("p_", metric)]],
+               stringsAsFactors = FALSE)
+  }
+
+  if (!is.null(ncore) && ncore > 1) {
+    cl <- parallel::makeCluster(ncore)
+    on.exit(parallel::stopCluster(cl))
+    parallel::clusterExport(cl, varlist = c("meta_bin", "coords", "metric", "evaluate_overlap_metrics", "expand_bin_chebyshev"), envir = environment())
+    results <- parallel::parApply(cl, combos, 1, do_one)
+  } else {
+    results <- apply(combos, 1, do_one)
+  }
+
+  close(pb)
+  df <- do.call(rbind, results)
+  return(df)
+}
+
+
+#' Evaluate overlap metrics (Dice, Jaccard, MCC) with permutation test
+#'
+#' @param bin1 Logical vector
+#' @param bin2 Logical vector
+#' @param coords Optional coordinate matrix for Chebyshev expansion
+#' @param bin_size_um Bin size in microns (optional, for future)
+#' @param expand_bin_dist Expansion distance in bins
+#' @param n_perm Number of permutations
+#' @param seed Random seed
+#' @param perm_index_mat Optional matrix of precomputed permutation indices (rows = elements, cols = permutations)
+#' @return Data frame with Dice, Jaccard, MCC and permutation p-values
+#' @export
+evaluate_overlap_metrics <- function(bin1, bin2, coords = NULL, bin_size_um = 50,
+                                     expand_bin_dist = 1, n_perm = 1000, seed = 123,
+                                     perm_index_mat = NULL) {
   set.seed(seed)
   stopifnot(length(bin1) == length(bin2))
   bin1 <- as.logical(bin1)
@@ -21,26 +80,28 @@ evaluate_overlap_metrics <- function(bin1, bin2, coords = NULL, bin_size_um = 50
   denom <- sqrt(TP + FP) * sqrt(TP + FN) * sqrt(TN + FP) * sqrt(TN + FN)
   mcc <- if (denom > 0) ((TP * TN) - (FP * FN)) / denom else NA
 
-  perm_dice <- numeric(n_perm)
-  perm_jaccard <- numeric(n_perm)
-  perm_mcc <- numeric(n_perm)
+  # Permutations
+  if (is.null(perm_index_mat)) {
+    perm_index_mat <- replicate(n_perm, sample(length(bin2)))
+  }
 
-  for (i in seq_len(n_perm)) {
-    bin2_perm <- sample(bin2)
+  perm_stats <- apply(perm_index_mat, 2, function(idx) {
+    bin2_perm <- bin2[idx]
     TP_p <- sum(bin1 & bin2_perm)
     FP_p <- sum(!bin1 & bin2_perm)
     FN_p <- sum(bin1 & !bin2_perm)
     TN_p <- sum(!bin1 & !bin2_perm)
 
-    perm_dice[i] <- if ((2 * TP_p + FP_p + FN_p) > 0) 2 * TP_p / (2 * TP_p + FP_p + FN_p) else NA
-    perm_jaccard[i] <- if ((TP_p + FP_p + FN_p) > 0) TP_p / (TP_p + FP_p + FN_p) else NA
-    denom_p <- sqrt(TP_p + FP_p) * sqrt(TP_p + FN_p) * sqrt(TN_p + FP_p) * sqrt(TN_p + FN_p)
-    perm_mcc[i] <- if (denom_p > 0) ((TP_p * TN_p) - (FP_p * FN_p)) / denom_p else NA
-  }
+    d <- if ((2 * TP_p + FP_p + FN_p) > 0) 2 * TP_p / (2 * TP_p + FP_p + FN_p) else NA
+    j <- if ((TP_p + FP_p + FN_p) > 0) TP_p / (TP_p + FP_p + FN_p) else NA
+    den <- sqrt(TP_p + FP_p) * sqrt(TP_p + FN_p) * sqrt(TN_p + FP_p) * sqrt(TN_p + FN_p)
+    m <- if (den > 0) ((TP_p * TN_p) - (FP_p * FN_p)) / den else NA
+    c(d, j, m)
+  })
 
-  p_dice <- mean(perm_dice >= dice, na.rm = TRUE)
-  p_jaccard <- mean(perm_jaccard >= jaccard, na.rm = TRUE)
-  p_mcc <- mean(perm_mcc >= mcc, na.rm = TRUE)
+  p_dice <- mean(perm_stats[1, ] >= dice, na.rm = TRUE)
+  p_jaccard <- mean(perm_stats[2, ] >= jaccard, na.rm = TRUE)
+  p_mcc <- mean(perm_stats[3, ] >= mcc, na.rm = TRUE)
 
   data.frame(
     dice = dice, p_dice = p_dice,
@@ -48,6 +109,7 @@ evaluate_overlap_metrics <- function(bin1, bin2, coords = NULL, bin_size_um = 50
     mcc = mcc, p_mcc = p_mcc
   )
 }
+
 
 evaluate_bidirectional_nn_distance <- function(bin1, bin2, coords, bin_size_um = 50) {
   stopifnot(length(bin1) == length(bin2))
