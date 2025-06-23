@@ -1,12 +1,12 @@
 Package: SPARROT
-Title: SPARROT — Spatial Proximity Analysis of Regional Relationships, Overlap, and Transcriptome
+Title: SPARROT: Spatial Proximity Analysis of Regional Relationships, Overlap, and Transcriptome
 Version: 0.1.0
 Authors@R: 
     person(given = "Xu", 
            family = "Pan", 
            role = c("aut", "cre"),
            email = "panx9623@gmail.com")
-Description: SPARROT provides tools to quantify and visualize the spatial proximity, overlap, and transcriptomic relationships between cell types in spatial transcriptomics data. It supports Seurat integration, cell probability binarization, overlap metrics with permutation testing, nearest-neighbor distance analysis, and flexible multi-celltype visualization.
+Description: Tools to quantify and visualize spatial proximity, overlap, and transcriptomic relationships between cell types in spatial transcriptomics data. Supports Seurat integration, cell probability binarization, overlap metrics with permutation testing, nearest-neighbor distance analysis, and multi-celltype visualization.
 Depends: R (>= 4.0)
 Imports: 
     methods,
