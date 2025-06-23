@@ -1,4 +1,3 @@
-export(SparrotObj)
 export(createSparrotObj)
 export(convertSeuratToSparrot)
 export(getCoords)
