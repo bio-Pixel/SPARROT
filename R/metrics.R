@@ -13,8 +13,6 @@ computePairwiseCelltypeOverlap <- function(object, metric = c("dice", "jaccard",
   meta_bin <- as.data.frame(S4Vectors::as.data.frame(object@meta.data[, grep("^bin_", colnames(object@meta.data))]))
   coords <- object@coords
 
-  pb <- txtProgressBar(min = 0, max = nrow(combos), style = 3)
-
   do_one <- function(pair) {
     bin1 <- as.logical(meta_bin[[paste0("bin_", pair[1])]])
     bin2 <- as.logical(meta_bin[[paste0("bin_", pair[2])]])
@@ -39,7 +37,6 @@ computePairwiseCelltypeOverlap <- function(object, metric = c("dice", "jaccard",
     results <- apply(combos, 1, do_one)
   }
 
-  close(pb)
   df <- do.call(rbind, results)
   return(df)
 }
