@@ -20,13 +20,10 @@ devtools::install_github("bio-Pixel/SPARROT")
 ## 📦 Features
 
 - Seamlessly convert Seurat spatial objects to `SparrotObj`
-- Binarize cell type probability using GMM or main-valley threshold
-- Compute spatial overlap (Dice, Jaccard, MCC) between genes and cell types
+- Compute spatial overlap (Dice-Sørensen coefficient, Jaccard index, Matthews correlation coefficient) between genes and cell types
+- Permutation tests for colocalization significance
 - Quantify spatial proximity using nearest-neighbor distance metrics
 - Visualize multi-celltype spatial maps with transparency encoding
-- Interface with [Nebulosa](https://github.com/constantAmateur/Nebulosa) for smooth feature density plots
-- Permutation tests for colocalization significance
-- Concave hull outlining for spatial domains
 
 ---
 
