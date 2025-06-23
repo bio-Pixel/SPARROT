@@ -38,6 +38,7 @@ computePairwiseCelltypeOverlap <- function(object, metric = c("dice", "jaccard",
   }
 
   df <- do.call(rbind, results)
+  colnames(df)[3] = metric
   return(df)
 }
 
