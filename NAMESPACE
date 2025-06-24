@@ -28,6 +28,7 @@ importFrom(ggplot2, ggplot, aes, geom_point, geom_polygon, scale_color_manual,
            coord_fixed, guides, guide_legend)
 importFrom(cowplot, get_legend, ggdraw, draw_plot)
 importFrom(mclust, Mclust, mclustBIC)
+importFrom(colorspace, lighten)
 importFrom(fields, rdist)
 importFrom(methods, new, is, as)
 importFrom(S4Vectors, DataFrame)
