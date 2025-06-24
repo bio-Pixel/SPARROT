@@ -1,5 +1,5 @@
 
-# 🧠 SPARROT Case Study  
+# 🟢 SPARROT Case Study  
 
 # Spatial Transcriptomics Showcase: Human Lymph Node
 
