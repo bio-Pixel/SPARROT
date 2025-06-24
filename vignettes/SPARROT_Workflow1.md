@@ -1,16 +1,15 @@
 
 # 🧠 SPARROT Case Study  
-## Spatial Transcriptomics Showcase: Myocardial Infarction Sample (P9)
 
-This vignette demonstrates how **SPARROT** can be applied to real spatial transcriptomics data. We use data from [Kuppe et al., 2022](https://www.nature.com/articles/s41586-022-05060-x), which presents a spatial multi-omic atlas of human myocardial infarction.
+# Spatial Transcriptomics Showcase: Myocardial Infarction Sample (P9)
 
-### 🔗 Dataset Downloads
+For this showcase, we utilize spatial transcriptomics data from [Kuppe et al., 2022](https://www.nature.com/articles/s41586-022-05060-x), who generated a comprehensive spatial multi-omic atlas of human myocardial infarction. Specifically, we analyze a 10X Visium spatial slide (P9) representing an ischemic zone of the human heart post-infarction. The Seurat-formatted spatial object can be downloaded directly from the following link:
 
-- **Seurat-formatted 10X Visium Spatial Data (ACH0012):**  
-  [10X_Visium_ACH0012.tar.gz (Zenodo)](https://zenodo.org/records/6580069/files/10X_Visium_ACH0012.tar.gz?download=1)
+**🔗 [10X_Visium_ACH0012.tar.gz (Zenodo)](https://zenodo.org/records/6580069/files/10X_Visium_ACH0012.tar.gz?download=1)**
 
-- **Cell type annotations (cell2location):**  
-  [cell2location_annotations.h5ad](https://datasets.cellxgene.cziscience.com/dcb1ee2c-f2fd-4fdf-b4cf-bc0a2ed283b2.h5ad)
+The corresponding cell type composition, estimated using *cell2location*, is available at:
+
+**🔗 [cell2location annotations (.rds)](https://drive.google.com/file/d/1YWocGsNZ929NKrZP0Jbfi-iBG9c2JR4j/view?usp=drive_link)**
 
 ---
 
@@ -23,9 +22,9 @@ library(SPARROT)
 library(Seurat)
 
 seu <- readRDS("ACH0012.rds")
-cpm <- read.csv("adata_obs.csv", row.names = 1)
-cpm <- cpm[colnames(seu), 7:17]
+cpm <- readRDS("P9_CellProb_cell2location.rds")
 
+# Create SPARROT object from Seurat object
 cc <- convertSeuratToSparrot(seu, cell_prob = cpm)
 ```
 
