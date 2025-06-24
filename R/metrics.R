@@ -21,7 +21,6 @@ computePairwiseCelltypeOverlap <- function(object, metric = c("dice", "jaccard",
       coords = coords,
       expand_bin_dist = 1
     )
-    setTxtProgressBar(pb, getTxtProgressBar(pb) + 1)
     data.frame(celltype1 = pair[1], celltype2 = pair[2],
                value = res[[metric]],
                pvalue = res[[paste0("p_", metric)]],
