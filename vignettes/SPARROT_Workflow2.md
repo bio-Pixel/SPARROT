@@ -93,7 +93,7 @@ For **downstream analysis**, we selected statistically significant edges:
 # Filter pairs with significant spatial overlap
 net_filtered <- subset(pm, pvalue < 0.05)
 ```
-<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/LM_net_data.png?raw=true" width="1000"/>
+<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/LM_net_data.png?raw=true" width="500"/>
 
 🌐 Visualizing Cell-Cell Spatial Co-localization Networks
 To visualize how different cell types co-localize in the tissue space, we built a cell-type network where:
