@@ -1,7 +1,5 @@
 
-# 🟢 SPARROT Case Study  
-
-# Spatial Transcriptomics Showcase: Human Lymph Node
+# 🟢 Spatial Transcriptomics Showcase: Human Lymph Node
 
 10x Genomics obtained fresh frozen human lymph node tissue from BioIVT Asterand Human Tissue Specimens. The tissue was embedded and cryosectioned as described in Visium Spatial Protocols - Tissue Preparation Guide (Demonstrated Protocol CG000240). The Seurat-formatted spatial object can be downloaded directly from the following link:
 
