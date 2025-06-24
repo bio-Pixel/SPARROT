@@ -19,10 +19,6 @@ The corresponding cell type composition, estimated using *cell2location*, is ava
 library(SPARROT)
 library(Seurat)
 library(ggplot2)
-library(igraph)
-library(tidygraph)
-library(ggraph)
-
 
 # Load Seurat spatial transcriptomics object 
 seu <- readRDS("lymph_node_seuobj.rds")
@@ -119,7 +115,7 @@ tg <- as_tbl_graph(g) %>%
 
 # Plot using ggraph
 set.seed(123)
-ggraph(tg, layout = "fr") +
+ggraph(tg, layout = "fr") + ## or layout = "kk", "circle"
   geom_edge_link(aes(width = weight), color = "gray60", alpha = 0.7) +
   geom_node_point(aes(color = community), size = 3) +
   geom_node_text(aes(label = name), repel = TRUE, size = 4) +
