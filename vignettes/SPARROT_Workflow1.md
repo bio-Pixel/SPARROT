@@ -58,7 +58,7 @@ plotMultiCellTypeProb(cc, celltype = c("Endothelial", "Fibroblast", "Cardiomyocy
 
 📷 **Output:**
 
-![](vignettes/figs/P9_cardio_prop.png)
+<img src="vignettes/figs/P9_cardio_prop.png" width="500"/>
 
 ---
 
