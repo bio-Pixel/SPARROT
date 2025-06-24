@@ -98,10 +98,10 @@ net_filtered
 
 ## 🌐 Visualizing Cell-Cell Spatial Co-localization Networks
 To visualize how different cell types co-localize in the tissue space, we built a cell-type network where:
-Nodes represent cell types
-Edges represent significant spatial co-localization
-Edge weight corresponds to the Dice score
-Communities are detected using Louvain clustering to reveal spatially interacting groups
+1. Nodes represent cell types
+2. Edges represent significant spatial co-localization
+3. Edge weight corresponds to the Dice score
+4. Communities are detected using Louvain clustering to reveal spatially interacting groups
 ```r
 library(igraph)
 library(tidygraph)
