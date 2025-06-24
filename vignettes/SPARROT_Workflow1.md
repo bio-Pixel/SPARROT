@@ -20,6 +20,7 @@ The corresponding cell type composition, estimated using *cell2location*, is ava
 ```r
 library(SPARROT)
 library(Seurat)
+library(ggplot2)
 
 # Load Seurat spatial transcriptomics object 
 seu <- readRDS("ACH0012.rds")
