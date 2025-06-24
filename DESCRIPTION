@@ -20,7 +20,8 @@ Imports:
     ggnewscale,
     cowplot,
     Nebulosa,
-    fields
+    fields,
+    colorspace
 Encoding: UTF-8
 License: GPL-3
 LazyData: true
