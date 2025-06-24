@@ -50,7 +50,7 @@ plotCellType <- function(object, celltype, outline = FALSE, pt.size = 1, color =
   return(p)
 }
 
-plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline = TRUE, color = NULL, coord.fixed = TRUE) {
+plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline = TRUE, color = NULL, coord.fixed = TRUE, legend = TRUE) {
   prob <- object@cell_prob
   meta <- as.data.frame(object@meta.data)
   coords <- as.data.frame(object@coords)
@@ -85,8 +85,9 @@ plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline 
       df <- data.frame(row = rows$row, col = rows$col, value = prob_sel)
 
       base <- base +
-        geom_point(data = df, aes(x = row, y = col, alpha = value, color = value), size = pt.size) +
-        scale_color_gradientn(colours = c("white", color_map[ct]))+
+        geom_point(data = df, aes(x = row, y = col, alpha = log(value), color = value), size = pt.size) +
+        scale_color_gradientn(colours = c("gray96", colorspace::lighten(color_map[ct], 0.9), color_map[ct]),
+                              values = c(0, threshold, 1))
         ggnewscale::new_scale_color()
     }
   }
@@ -107,24 +108,25 @@ plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline 
     base <- base + geom_polygon(data = hull_df, aes(x = V1, y = V2), color = "black", alpha = 0)
   }
 
-  legend_df <- data.frame(
-    row = seq_along(celltype),
-    col = 1,
-    celltype = factor(celltype, levels = celltype)
-  )
-
-  legend_layer <- ggplot(legend_df, aes(x = row, y = col, color = celltype)) +
-    guides(color = guide_legend(override.aes = list(alpha = 1))) +
-    geom_point(size = 3) +
-    scale_color_manual(values = color_map[celltype]) +
-    theme_void() +
-    theme(legend.position = "right")
-
-  legend_plot <- cowplot::get_legend(legend_layer)
-  base <- cowplot::ggdraw() +
-    cowplot::draw_plot(base, 0, 0, 0.85, 1) +
-    cowplot::draw_plot(legend_plot, 0.85, 0, 0.15, 1)
-
+  if (outline) {
+    legend_df <- data.frame(
+      row = seq_along(celltype),
+      col = 1,
+      celltype = factor(celltype, levels = celltype)
+    )
+  
+    legend_layer <- ggplot(legend_df, aes(x = row, y = col, color = celltype)) +
+      guides(color = guide_legend(override.aes = list(alpha = 1))) +
+      geom_point(size = 3) +
+      scale_color_manual(values = color_map[celltype]) +
+      theme_void() +
+      theme(legend.position = "right")
+  
+    legend_plot <- cowplot::get_legend(legend_layer)
+    base <- cowplot::ggdraw() +
+      cowplot::draw_plot(base, 0, 0, 0.85, 1) +
+      cowplot::draw_plot(legend_plot, 0.85, 0, 0.15, 1)
+  }
   return(base)
 }
 
