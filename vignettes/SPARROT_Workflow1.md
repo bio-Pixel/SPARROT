@@ -26,9 +26,13 @@ seu <- readRDS("ACH0012.rds")
 cpm <- readRDS("P9_CellProb_cell2location.rds")
 
 identical(colnames(seu), rownames(cpm))
+```
+```r
 #> [1] TRUE
+```
 
-# Create SPARROT object from Seurat object
+Create SPARROT object from Seurat object:
+```r
 cc <- convertSeuratToSparrot(seu, cell_prob = cpm)
 ```
 You can also create the SPARROT object by:
@@ -37,6 +41,8 @@ cc = createSparrotObj(coords = GetTissueCoordinates(seu),
                       cell_prob = cpm,
                       expr = GetAssayData(seu, layer = 'data'))
 cc
+```
+```r
 #> An object of class 'SparrotObj'
 #> 
 #> Number of spots/cells:  4361 
@@ -101,10 +107,12 @@ spFeatureDensityPlot(cc, features = c("PDGFRA","RYR2","PECAM1"), outline = F)
 evaluate_overlap_metrics(bin1 = as.logical(cc@meta.data[, "bin_Cardiomyocyte"]),
                          bin2 = as.logical(cc@meta.data[, "bin_Fibroblast"]),
                          coords = cc@coords)
-
+```
+```r
 #>       dice p_dice   jaccard p_jaccard        mcc p_mcc
 #>1 0.3724632      1 0.2288509         1 -0.4687531     1
 ```
+
 > **Interpretation**: Although *Cardiomyocytes* and *Fibroblasts* show moderate spatial overlap (*Dice* = 0.37),  
 > the lack of statistical significance (*p* = 1) and a negative *MCC* suggest their distributions are likely  
 > **mutually exclusive** in this tissue region and **not spatially co-localized beyond chance**.
@@ -113,10 +121,12 @@ evaluate_overlap_metrics(bin1 = as.logical(cc@meta.data[, "bin_Cardiomyocyte"]),
 evaluate_overlap_metrics(bin1 = as.logical(cc@meta.data[, "bin_Cardiomyocyte"]),
                          bin2 = as.logical(cc@meta.data[, "bin_Endothelial"]),
                          coords = cc@coords)
-
+```
+```r
 #>       dice p_dice   jaccard p_jaccard       mcc p_mcc
 #>1 0.6410665      0 0.4717423         0 0.1813916     0
 ```
+
 > **Interpretation**: *Cardiomyocytes* and *Endothelial cells* exhibit a **strong spatial overlap**  
 > (*Dice* = 0.64, *Jaccard* = 0.47), with all permutation-based p-values < 0.001.  
 > This indicates a **statistically significant co-localization**, suggesting these two cell types  
@@ -128,22 +138,28 @@ evaluate_overlap_metrics(bin1 = as.logical(cc@meta.data[, "bin_Cardiomyocyte"]),
 
 ```r
 computeGeneCelltypeOverlap(cc, gene = "RYR2", celltype = "Fibroblast")
+```
+```r
 #>fitting ...
 #>  |===================================================================================================================| 100%
 #>       dice p_dice   jaccard p_jaccard        mcc p_mcc
 #>1 0.3614404      1 0.2205842         1 -0.3097191     1
 ```
+
 > **Interpretation**: The spatial expression of *RYR2* shows only modest overlap with *Fibroblasts*  
 > (*Dice* = 0.36), and all p-values are non-significant (*p* = 1), suggesting that *RYR2* is likely expressed  
 > in regions that are **spatially distinct** from *Fibroblast*-enriched areas.
 
 ```r
 computeGeneCelltypeOverlap(cc, gene = "PDGFRA", celltype = "Fibroblast")
+```
+```r
 #>fitting ...
 #>  |===================================================================================================================| 100%
 #>       dice p_dice   jaccard p_jaccard      mcc p_mcc
 #>1 0.5524716      0 0.3816654         0 0.231789     0
 ```
+
 > **Interpretation**: The expression of *PDGFRA* exhibits a **significant spatial colocalization**  
 > with *Fibroblasts* (*Dice* = 0.55, *p* < 0.001), indicating that *PDGFRA* may mark or functionally associate  
 > with *Fibroblast* populations in this tissue context.
