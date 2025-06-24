@@ -34,17 +34,18 @@ cc = createSparrotObj(coords = GetTissueCoordinates(seu),
                       cell_prob = cpm,
                       expr = GetAssayData(seu, layer = 'data'))
 cc
+#> An object of class 'SparrotObj'
+#> 
+#> Number of spots/cells:  4361 
+#> Number of genes:        15972 
+#> Number of cell types:   11 
+#> Meta data columns:
+#>   • coords:     row, col 
+#>   • binarized:  bin_Adipocyte, bin_Cardiomyocyte, bin_Endothelial, bin_Fibroblast, bin_Lymphoid, bin_Mast, bin_Myeloid, bin_Neuronal, bin_Pericyte, bin_Cycling.cells, bin_vSMCs 
+#> 
+#> Use @meta.data, @expr, @cell_prob, or accessor methods to explore.
 ```
-An object of class 'SparrotObj'
 
-Number of spots/cells:  4361 
-Number of genes:        15972 
-Number of cell types:   11 
-Meta data columns:
-  • coords:     row, col 
-  • binarized:  bin_Adipocyte, bin_Cardiomyocyte, bin_Endothelial, bin_Fibroblast, bin_Lymphoid, bin_Mast, bin_Myeloid, bin_Neuronal, bin_Pericyte, bin_Cycling.cells, bin_vSMCs 
-
-Use @meta.data, @expr, @cell_prob, or accessor methods to explore.
 ---
 
 ### 2. Visualize Multi-celltype Probabilities
