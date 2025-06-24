@@ -47,8 +47,29 @@ cc
 ```
 
 ---
+### 2. Visualize celltype Probability
 
-### 2. Visualize Multi-celltype Probabilities
+```r
+p1 = plotCellTypeProb(cc, celltype = "Fibroblast")+
+      coord_fixed()+
+      ggtitle("Fibroblast")+ xlab(NULL)+ ylab(NULL)+
+      theme_bw()+
+      theme(axis.ticks = element_blank(),
+            axis.text = element_blank())
+
+p2 = plotCellTypeProb(cc, celltype = "Cardiomyocyte")+
+      coord_fixed()+
+      ggtitle("Cardiomyocyte")+ xlab(NULL)+ ylab(NULL)+
+      theme_bw()+
+      theme(axis.ticks = element_blank(),
+            axis.text = element_blank())
+library(patchwork)
+p1+p2
+
+```
+<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/P9_cardio_FCardioprop.png?raw=true" width="500"/>
+
+### 3. Visualize Multi-celltype Probabilities
 
 ```r
 plotMultiCellTypeProb(cc, celltype = c("Endothelial", "Fibroblast", "Cardiomyocyte"),
@@ -60,7 +81,7 @@ plotMultiCellTypeProb(cc, celltype = c("Endothelial", "Fibroblast", "Cardiomyocy
 
 ---
 
-### 3. Evaluate Pairwise Celltype Overlap
+### 4. Evaluate Pairwise Celltype Overlap
 
 ```r
 evaluate_overlap_metrics(bin1 = as.logical(cc@meta.data[, "bin_Cardiomyocyte"]),
