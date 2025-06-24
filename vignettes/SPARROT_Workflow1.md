@@ -29,7 +29,7 @@ seu <- readRDS("ACH0012.rds")
 cpm <- readRDS("P9_CellProb_cell2location.rds")
 view(cpm)
 ```
-<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/P9_cpm.png?raw=true" width="500"/>
+<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/P9_cpm.png?raw=true" width="1000"/>
 
 
 ```r
