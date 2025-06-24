@@ -29,8 +29,10 @@ devtools::install_github("bio-Pixel/SPARROT")
 
 ## 📘 Vignette
 
-You can find a step-by-step usage example in the [SPARROT Workflow Vignette](vignettes/SPARROT_Workflow1.md).  
-*(Or replace with HTML if using `pkgdown`)*
+You can find a step-by-step usage example in the
+1. [Myocardial Infarction](vignettes/SPARROT_Workflow1.md)
+2. [Myocardial Infarction](vignettes/SPARROT_Workflow2.md)
+3. [Myocardial Infarction](vignettes/SPARROT_Workflow3.md)
 
 ---
 
