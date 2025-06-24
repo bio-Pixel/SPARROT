@@ -56,8 +56,7 @@ plotMultiCellTypeProb(cc, celltype = c("Endothelial", "Fibroblast", "Cardiomyocy
                       outline = FALSE, coord.fixed = TRUE)
 ```
 
-![](vignettes/P9_cardio_prop.png)
-
+<img src="https://github.com/bio-Pixel/SPARROT/blob/main/man/figures/P9_cardio_prop.png?raw=true" width="500"/>
 
 ---
 
