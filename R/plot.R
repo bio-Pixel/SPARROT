@@ -53,7 +53,7 @@ plotCellType <- function(object, celltype, outline = FALSE, pt.size = 1, color =
 plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline = TRUE, color = NULL, coord.fixed = TRUE) {
   prob <- object@cell_prob
   meta <- as.data.frame(object@meta.data)
-  coords <- meta[, c("row", "col")]
+  coords <- as.data.frame(object@coords)
 
   if (is.null(celltype)) {
     celltype <- colnames(prob)
@@ -85,7 +85,8 @@ plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline 
       df <- data.frame(row = rows$row, col = rows$col, value = prob_sel)
 
       base <- base +
-        geom_point(data = df, aes(x = row, y = col, alpha = value), size = pt.size, color = color_map[ct]) +
+        geom_point(data = df, aes(x = row, y = col, alpha = value, color = value), size = pt.size) +
+        scale_color_gradientn(colours = c("white", color_map[ct]))+
         ggnewscale::new_scale_color()
     }
   }
