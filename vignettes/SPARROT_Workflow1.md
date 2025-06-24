@@ -60,7 +60,7 @@ plotMultiCellTypeProb(cc, celltype = c("Endothelial", "Fibroblast", "Cardiomyocy
 
 <img src="man/figures/P9_cardio_prop.png" align="right" height = "200">
 ![]("man/figures/P9_cardio_prop.png")
-
+# SPARROT <img src="man/figures/SPARROT_logo.png" align="right" height="140"/>
 ---
 
 ### 3. Evaluate Pairwise Celltype Overlap
