@@ -21,10 +21,18 @@ The corresponding cell type composition, estimated using *cell2location*, is ava
 library(SPARROT)
 library(Seurat)
 
-# Load Seurat spatial transcriptomics object and cell-type deconvolution matrix 
+# Load Seurat spatial transcriptomics object 
 seu <- readRDS("ACH0012.rds")
+```
+```r
+# Load cell-type deconvolution matrix 
 cpm <- readRDS("P9_CellProb_cell2location.rds")
+view(cpm)
+```
+<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/P9_cpm.png?raw=true" width="500"/>
 
+
+```r
 identical(colnames(seu), rownames(cpm))
 ```
 ```r
