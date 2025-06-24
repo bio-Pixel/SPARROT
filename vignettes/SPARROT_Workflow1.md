@@ -25,6 +25,9 @@ library(Seurat)
 seu <- readRDS("ACH0012.rds")
 cpm <- readRDS("P9_CellProb_cell2location.rds")
 
+identical(colnames(seu), rownames(cpm))
+#> [1] TRUE
+
 # Create SPARROT object from Seurat object
 cc <- convertSeuratToSparrot(seu, cell_prob = cpm)
 ```
@@ -92,7 +95,7 @@ spFeatureDensityPlot(cc, features = c("PDGFRA","RYR2","PECAM1"), outline = F)
 ---
 
 ### 5. Evaluation of Spatial Co-localization of Cardiomyocytes with Fibroblasts/Endothelial cells
-evaluate_overlap_metrics() evaluates the spatial overlap between two binary spatial patterns — for instance, between two cell types or between a gene expression region and a cell type — in spatial transcriptomics data. It computes both the **overlap scores (Dice-Sørensen coefficient, Jaccard index, Matthews correlation coefficient)** and **permutation-based p-values** to assess statistical significance.
+*evaluate_overlap_metrics()* evaluates the spatial overlap between two binary spatial patterns — for instance, between two cell types or between a gene expression region and a cell type — in spatial transcriptomics data. It computes both the **overlap scores (Dice-Sørensen coefficient, Jaccard index, Matthews correlation coefficient)** and **permutation-based p-values** to assess statistical significance.
 
 ```r
 evaluate_overlap_metrics(bin1 = as.logical(cc@meta.data[, "bin_Cardiomyocyte"]),
@@ -121,30 +124,30 @@ evaluate_overlap_metrics(bin1 = as.logical(cc@meta.data[, "bin_Cardiomyocyte"]),
 
 ---
 
-### 4. Build Colocalization Network
+### 6. Evaluation of Spatial Co-localization of Cardiomyocytes with Marker Gene Expression
 
 ```r
-library(igraph)
-library(tidygraph)
-library(ggraph)
-
-g <- graph_from_data_frame(net[, c("celltype1", "celltype2", "dice")], directed = FALSE)
-E(g)$weight <- net$dice
-tg <- as_tbl_graph(g) %>% mutate(community = as.factor(group_louvain()))
+computeGeneCelltypeOverlap(cc, gene = "RYR2", celltype = "Fibroblast")
+#>fitting ...
+#>  |===================================================================================================================| 100%
+#>       dice p_dice   jaccard p_jaccard        mcc p_mcc
+#>1 0.3614404      1 0.2205842         1 -0.3097191     1
 ```
+> **Interpretation**: The spatial expression of *RYR2* shows only modest overlap with *Fibroblasts*  
+> (*Dice* = 0.36), and all p-values are non-significant (*p* = 1), suggesting that *RYR2* is likely expressed  
+> in regions that are **spatially distinct** from *Fibroblast*-enriched areas.
 
 ```r
-ggraph(tg, layout = "fr") +
-  geom_edge_link(aes(width = weight), color = "gray60", alpha = 0.7) +
-  geom_node_point(aes(color = community), size = 3) +
-  geom_node_text(aes(label = name), repel = TRUE, size = 4) +
-  scale_edge_width(range = c(0.5, 3)) +
-  theme_void()
+computeGeneCelltypeOverlap(cc, gene = "PDGFRA", celltype = "Fibroblast")
+#>fitting ...
+#>  |===================================================================================================================| 100%
+#>       dice p_dice   jaccard p_jaccard      mcc p_mcc
+#>1 0.5524716      0 0.3816654         0 0.231789     0
 ```
+> **Interpretation**: The expression of *PDGFRA* exhibits a **significant spatial colocalization**  
+> with *Fibroblasts* (*Dice* = 0.55, *p* < 0.001), indicating that *PDGFRA* may mark or functionally associate  
+> with *Fibroblast* populations in this tissue context.
 
-📷 **Output:**
-
-![](vignettes/figs/ACH0012_cellcolocal_map.png)
 
 ---
 
