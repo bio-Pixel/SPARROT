@@ -92,6 +92,7 @@ For **downstream analysis**, we selected statistically significant edges:
 ```r
 # Filter pairs with significant spatial overlap
 net_filtered <- subset(pm, pvalue < 0.05)
+net_filtered
 ```
 <img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/LM_net_data.png?raw=true" width="500"/>
 
