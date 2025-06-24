@@ -96,7 +96,7 @@ net_filtered
 ```
 <img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/LM_net_data.png?raw=true" width="500"/>
 
-🌐 Visualizing Cell-Cell Spatial Co-localization Networks
+## 🌐 Visualizing Cell-Cell Spatial Co-localization Networks
 To visualize how different cell types co-localize in the tissue space, we built a cell-type network where:
 Nodes represent cell types
 Edges represent significant spatial co-localization
