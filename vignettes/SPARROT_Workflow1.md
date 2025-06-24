@@ -81,19 +81,43 @@ plotMultiCellTypeProb(cc, celltype = c("Endothelial", "Fibroblast", "Cardiomyocy
 
 ---
 
-### 4. Evaluate Pairwise Celltype Overlap
+### 4. Visualize Gene expression density 
+
+```r
+spFeatureDensityPlot(cc, features = c("PDGFRA","RYR2","PECAM1"), outline = F)
+```
+
+<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/P9_cardio_expr.png?raw=true" width="1000"/>
+
+---
+
+### 5. Evaluation of Spatial Co-localization of Cardiomyocytes with Fibroblasts/Endothelial cells
+evaluate_overlap_metrics() evaluates the spatial overlap between two binary spatial patterns — for instance, between two cell types or between a gene expression region and a cell type — in spatial transcriptomics data. It computes both the **overlap scores (Dice-Sørensen coefficient, Jaccard index, Matthews correlation coefficient)** and **permutation-based p-values** to assess statistical significance.
+
+```r
+evaluate_overlap_metrics(bin1 = as.logical(cc@meta.data[, "bin_Cardiomyocyte"]),
+                         bin2 = as.logical(cc@meta.data[, "bin_Fibroblast"]),
+                         coords = cc@coords)
+
+#>       dice p_dice   jaccard p_jaccard        mcc p_mcc
+#>1 0.3724632      1 0.2288509         1 -0.4687531     1
+```
+> **Interpretation**: Although *Cardiomyocytes* and *Fibroblasts* show moderate spatial overlap (*Dice* = 0.37),  
+> the lack of statistical significance (*p* = 1) and a negative *MCC* suggest their distributions are likely  
+> **mutually exclusive** in this tissue region and **not spatially co-localized beyond chance**.
 
 ```r
 evaluate_overlap_metrics(bin1 = as.logical(cc@meta.data[, "bin_Cardiomyocyte"]),
                          bin2 = as.logical(cc@meta.data[, "bin_Endothelial"]),
                          coords = cc@coords)
-```
 
-```r
-pm <- computePairwiseCelltypeOverlap(cc, metric = "dice", ncore = 10)
-net <- subset(pm, pvalue < 0.05)
-saveRDS(net, "pairwise_dice_sig.rds")
+#>       dice p_dice   jaccard p_jaccard       mcc p_mcc
+#>1 0.6410665      0 0.4717423         0 0.1813916     0
 ```
+> **Interpretation**: *Cardiomyocytes* and *Endothelial cells* exhibit a **strong spatial overlap**  
+> (*Dice* = 0.64, *Jaccard* = 0.47), with all permutation-based p-values < 0.001.  
+> This indicates a **statistically significant co-localization**, suggesting these two cell types  
+> may occupy shared niches or interact closely in the infarct zone.
 
 ---
 
