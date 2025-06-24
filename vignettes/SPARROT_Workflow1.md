@@ -67,7 +67,7 @@ library(patchwork)
 p1+p2
 
 ```
-<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/P9_cardio_FCardioprop.png?raw=true" width="500"/>
+<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/P9_cardio_FCardioprop.png?raw=true" width="1000"/>
 
 ### 3. Visualize Multi-celltype Probabilities
 
