@@ -29,7 +29,7 @@ devtools::install_github("bio-Pixel/SPARROT")
 
 ## 📘 Vignette
 
-You can find a step-by-step usage example in the [SPARROT Workflow Vignette](vignettes/SPARROT_Workflow.Rmd).  
+You can find a step-by-step usage example in the [SPARROT Workflow Vignette](vignettes/SPARROT_Workflow1.Rmd).  
 *(Or replace with HTML if using `pkgdown`)*
 
 ---
