@@ -57,14 +57,14 @@ p1 = plotCellTypeProb(cc, celltype = "Fibroblast")+
       theme(axis.ticks = element_blank(),
             axis.text = element_blank())
 
-p2 = plotCellTypeProb(cc, celltype = "Cardiomyocyte")+
-      coord_fixed()+
-      ggtitle("Cardiomyocyte")+ xlab(NULL)+ ylab(NULL)+
-      theme_bw()+
-      theme(axis.ticks = element_blank(),
-            axis.text = element_blank())
+p3 = plotCellTypeProb(cc, celltype = "Endothelial")+
+  coord_fixed()+
+  ggtitle("Endothelial")+ xlab(NULL)+ ylab(NULL)+
+  theme_bw()+
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank())
 library(patchwork)
-p1+p2
+p1+p2+p3
 
 ```
 <img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/P9_cardio_FCardioprop.png?raw=true" width="1000"/>
