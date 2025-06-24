@@ -19,6 +19,10 @@ The corresponding cell type composition, estimated using *cell2location*, is ava
 library(SPARROT)
 library(Seurat)
 library(ggplot2)
+library(igraph)
+library(tidygraph)
+library(ggraph)
+
 
 # Load Seurat spatial transcriptomics object 
 seu <- readRDS("lymph_node_seuobj.rds")
@@ -76,80 +80,53 @@ plotMultiCellTypeProb(cc, celltype =c('T_CD4._naive', 'B_naive', 'FDC'),
 
 ---
 
-### 4. Visualize Gene expression density 
-
+### 3. Pairwise Spatial Overlap Significance Analysis for Specified Cell Types
+The *computePairwiseCelltypeOverlap()* function is designed to efficiently calculate spatial overlap (**metric = c("dice", "jaccard", "mcc")**) for **all cell type pairs in a given SparrotObj**. When analyzing datasets with many cell types, the number of pairwise comparisons grows rapidly, making parallel computing highly beneficial. If **ncore > 1** is specified, parallel computation is enabled. 
 ```r
-spFeatureDensityPlot(cc, features = c("PDGFRA","RYR2","PECAM1"), outline = F)
+# Run overlap computation using 10 cores
+pm <- computePairwiseCelltypeOverlap(cc, metric = "dice", ncore = 10)
 ```
-
-<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/P9_cardio_expr.png?raw=true" width="1000"/>
-
----
-
-### 5. Evaluation of Spatial Co-localization of Cardiomyocytes with Fibroblasts/Endothelial cells
-*evaluate_overlap_metrics()* evaluates the spatial overlap between two binary spatial patterns — for instance, between two cell types or between a gene expression region and a cell type — in spatial transcriptomics data. It computes both the **overlap scores (Dice-Sørensen coefficient, Jaccard index, Matthews correlation coefficient)** and **permutation-based p-values** to assess statistical significance.
-
+If ncore = NULL or ncore = 1, the function defaults to sequential execution.
+This function returns a **data frame** with each cell type pair, their **overlap score**, and **corresponding p-value**. 
+For **downstream analysis**, we selected statistically significant edges:
 ```r
-evaluate_overlap_metrics(bin1 = as.logical(cc@meta.data[, "bin_Cardiomyocyte"]),
-                         bin2 = as.logical(cc@meta.data[, "bin_Fibroblast"]),
-                         coords = cc@coords)
+# Filter pairs with significant spatial overlap
+net_filtered <- subset(pm, pvalue < 0.05)
 ```
+<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/LM_net_data.png?raw=true" width="1000"/>
+
+🌐 Visualizing Cell-Cell Spatial Co-localization Networks
+To visualize how different cell types co-localize in the tissue space, we built a cell-type network where:
+Nodes represent cell types
+Edges represent significant spatial co-localization
+Edge weight corresponds to the Dice score
+Communities are detected using Louvain clustering to reveal spatially interacting groups
 ```r
-#>       dice p_dice   jaccard p_jaccard        mcc p_mcc
-#>1 0.3724632      1 0.2288509         1 -0.4687531     1
+library(igraph)
+library(tidygraph)
+library(ggraph)
+
+# Create igraph object from filtered results
+g <- graph_from_data_frame(net_filtered[, c("celltype1", "celltype2", "dice")], directed = FALSE)
+
+# Assign edge weight
+E(g)$weight <- net_filtered$dice
+
+# Convert to tidygraph for community detection
+tg <- as_tbl_graph(g) %>%
+  mutate(community = as.factor(group_louvain()))
+
+# Plot using ggraph
+set.seed(123)
+ggraph(tg, layout = "fr") +
+  geom_edge_link(aes(width = weight), color = "gray60", alpha = 0.7) +
+  geom_node_point(aes(color = community), size = 3) +
+  geom_node_text(aes(label = name), repel = TRUE, size = 4) +
+  scale_edge_width(range = c(0.5, 3)) +
+  theme_void() +
+  theme(legend.position = "none", aspect.ratio = 0.8)
 ```
-
-> **Interpretation**: Although *Cardiomyocytes* and *Fibroblasts* show moderate spatial overlap (*Dice* = 0.37),  
-> the lack of statistical significance (*p* = 1) and a negative *MCC* suggest their distributions are likely  
-> **mutually exclusive** in this tissue region and **not spatially co-localized beyond chance**.
-
-```r
-evaluate_overlap_metrics(bin1 = as.logical(cc@meta.data[, "bin_Cardiomyocyte"]),
-                         bin2 = as.logical(cc@meta.data[, "bin_Endothelial"]),
-                         coords = cc@coords)
-```
-```r
-#>       dice p_dice   jaccard p_jaccard       mcc p_mcc
-#>1 0.6410665      0 0.4717423         0 0.1813916     0
-```
-
-> **Interpretation**: *Cardiomyocytes* and *Endothelial cells* exhibit a **strong spatial overlap**  
-> (*Dice* = 0.64, *Jaccard* = 0.47), with all permutation-based p-values < 0.001.  
-> This indicates a **statistically significant co-localization**, suggesting these two cell types  
-> may occupy shared niches or interact closely in the infarct zone.
-
----
-
-### 6. Evaluation of Spatial Co-localization of Cardiomyocytes with Gene Expression
-
-```r
-computeGeneCelltypeOverlap(cc, gene = "RYR2", celltype = "Fibroblast")
-```
-```r
-#>fitting ...
-#>  |===================================================================================================================| 100%
-#>       dice p_dice   jaccard p_jaccard        mcc p_mcc
-#>1 0.3614404      1 0.2205842         1 -0.3097191     1
-```
-
-> **Interpretation**: The spatial expression of *RYR2* shows only modest overlap with *Fibroblasts*  
-> (*Dice* = 0.36), and all p-values are non-significant (*p* = 1), suggesting that *RYR2* is likely expressed  
-> in regions that are **spatially distinct** from *Fibroblast*-enriched areas.
-
-```r
-computeGeneCelltypeOverlap(cc, gene = "PDGFRA", celltype = "Fibroblast")
-```
-```r
-#>fitting ...
-#>  |===================================================================================================================| 100%
-#>       dice p_dice   jaccard p_jaccard      mcc p_mcc
-#>1 0.5524716      0 0.3816654         0 0.231789     0
-```
-
-> **Interpretation**: The expression of *PDGFRA* exhibits a **significant spatial colocalization**  
-> with *Fibroblasts* (*Dice* = 0.55, *p* < 0.001), indicating that *PDGFRA* may mark or functionally associate  
-> with *Fibroblast* populations in this tissue context.
-
+<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/LM_net.png?raw=true" width="600"/>
 
 ---
 
