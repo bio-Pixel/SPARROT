@@ -29,10 +29,10 @@ devtools::install_github("bio-Pixel/SPARROT")
 
 ## 📘 Vignette
 
-You can find a step-by-step usage example in the
-1. [Myocardial Infarction](vignettes/SPARROT_Workflow1.md)
-2. [Myocardial Infarction](vignettes/SPARROT_Workflow2.md)
-3. [Myocardial Infarction](vignettes/SPARROT_Workflow3.md)
+You can find a step-by-step usage example:
+1. [Human Myocardial Infarction, 10x Visium](vignettes/SPARROT_Workflow1.md)
+2. [Human Lymph Node, 10x Visium](vignettes/SPARROT_Workflow2.md)
+3. [Human Pancreatic Ductal Adenocarcinoma, Stereo-seq](vignettes/SPARROT_Workflow3.md)
 
 ---
 
@@ -42,11 +42,17 @@ You can find a step-by-step usage example in the
 library(SPARROT)
 
 # Convert Seurat to SPARROT
-obj <- convertSeuratToSparrot(seurat_obj, cell_prob = pred_matrix)
+sparobj <- convertSeuratToSparrot(seurat_obj, cell_prob = pred_matrix)
 
 # Plot spatial probabilities
-plotMultiCellTypeProb(obj, celltype = c("B", "Plasma"))
+plotMultiCellTypeProb(sparobj, celltype = c("B", "Plasma"))
 
 # Compute gene-celltype overlap
-computeGeneCelltypeOverlap(obj, gene = "MZB1", celltype = "Plasma")
+computeGeneCelltypeOverlap(sparobj, gene = "MZB1", celltype = "Plasma")
+
+# Evaluate spatial co-localization
+evaluate_overlap_metrics(bin1 = as.logical(sparobj@meta.data[, "bin_B"]),
+                         bin2 = as.logical(sparobj@meta.data[, "bin_Plasma"]),
+                         coords = sparobj@coords)
+
 ```
