@@ -1,6 +1,6 @@
 Package: SPARROT
 Title: SPARROT: Spatial Proximity Analysis of Regional Relationships, Overlap, and Transcriptome
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     person(given = "Xu", 
            family = "Pan", 
