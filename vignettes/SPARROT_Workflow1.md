@@ -21,13 +21,30 @@ The corresponding cell type composition, estimated using *cell2location*, is ava
 library(SPARROT)
 library(Seurat)
 
+# Load Seurat spatial transcriptomics object and cell-type deconvolution matrix 
 seu <- readRDS("ACH0012.rds")
 cpm <- readRDS("P9_CellProb_cell2location.rds")
 
 # Create SPARROT object from Seurat object
 cc <- convertSeuratToSparrot(seu, cell_prob = cpm)
 ```
+You can also create the SPARROT object by:
+```r
+cc = createSparrotObj(coords = GetTissueCoordinates(seu),
+                      cell_prob = cpm,
+                      expr = GetAssayData(seu, layer = 'data'))
+cc
+```
+An object of class 'SparrotObj'
 
+Number of spots/cells:  4361 
+Number of genes:        15972 
+Number of cell types:   11 
+Meta data columns:
+  • coords:     row, col 
+  • binarized:  bin_Adipocyte, bin_Cardiomyocyte, bin_Endothelial, bin_Fibroblast, bin_Lymphoid, bin_Mast, bin_Myeloid, bin_Neuronal, bin_Pericyte, bin_Cycling.cells, bin_vSMCs 
+
+Use @meta.data, @expr, @cell_prob, or accessor methods to explore.
 ---
 
 ### 2. Visualize Multi-celltype Probabilities
@@ -90,7 +107,9 @@ ggraph(tg, layout = "fr") +
 ## 📋 Session Info
 
 
-## 🧪 Session Info
+```r
+sessionInfo()
+```
 
 ```
 R version 4.3.3 (2024-02-29 ucrt)
