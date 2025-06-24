@@ -142,7 +142,7 @@ evaluate_overlap_metrics(bin1 = as.logical(cc@meta.data[, "bin_Cardiomyocyte"]),
 
 ---
 
-### 6. Evaluation of Spatial Co-localization of Cardiomyocytes with Marker Gene Expression
+### 6. Evaluation of Spatial Co-localization of Cardiomyocytes with Gene Expression
 
 ```r
 computeGeneCelltypeOverlap(cc, gene = "RYR2", celltype = "Fibroblast")
