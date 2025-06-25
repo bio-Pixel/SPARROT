@@ -141,35 +141,46 @@ evaluate_overlap_metrics(bin1 = cc@meta.data$bin_CD27pos_Bm,
 > **Interpretation**:  Spatial overlap metrics revealed that *CD27*⁺ memory B cells are significantly co-localized with *ADA2*⁺ plasma cells (Dice = 0.48, MCC = 0.32, p < 0.001), while showing no overlap and even spatial exclusion with *ADA2*⁻ plasma cells (MCC = –0.25, p = 1), supporting a local differentiation origin of *ADA2*⁺ plasma cells within the immune microenvironment.
 ---
 
-### 6. Evaluation of Spatial Co-localization of Cardiomyocytes with Gene Expression
+### 5. Spatial Distance between Binary Features (*CD27*⁺ Bm to *ADA2*⁺/*ADA2*⁻ PC)
+The *evaluate_bidirectional_nn_distance()* function calculates the bidirectional nearest-neighbor (NN) distance between two sets of spatially localized binary features (e.g., cell type presence or gene expression). It is used to assess spatial proximity rather than direct overlap. This method provides a robust spatial distance metric between two binary masks (e.g., bin1, bin2), such as two cell types or a gene and a cell type.
 
 ```r
-computeGeneCelltypeOverlap(cc, gene = "RYR2", celltype = "Fibroblast")
-```
-```r
-#>fitting ...
-#>  |===================================================================================================================| 100%
-#>       dice p_dice   jaccard p_jaccard        mcc p_mcc
-#>1 0.3614404      1 0.2205842         1 -0.3097191     1
-```
+d1 = evaluate_bidirectional_nn_distance(bin1 = cc2@meta.data$bin_CD27pos_Bm,
+                                        bin2 = cc2@meta.data$bin_ADA2pos_PC,
+                                        coords = cc2@coords)
 
-> **Interpretation**: The spatial expression of *RYR2* shows only modest overlap with *Fibroblasts*  
-> (*Dice* = 0.36), and all p-values are non-significant (*p* = 1), suggesting that *RYR2* is likely expressed  
-> in regions that are **spatially distinct** from *Fibroblast*-enriched areas.
+d2 = evaluate_bidirectional_nn_distance(bin1 = cc2@meta.data$bin_CD27pos_Bm,
+                                        bin2 = cc2@meta.data$bin_ADA2neg_PC,
+                                        coords = cc2@coords)
+df = rbind(data.frame(mean = d1$nn1to2$mean_nn1to2_bin, sd = d1$nn1to2$sd_nn1to2_bin, type = "ADA2+ PC"),
+           data.frame(mean = d2$nn1to2$mean_nn1to2_bin, sd = d2$nn1to2$sd_nn1to2_bin, type = "ADA2- PC"))
 
-```r
-computeGeneCelltypeOverlap(cc, gene = "PDGFRA", celltype = "Fibroblast")
-```
-```r
-#>fitting ...
-#>  |===================================================================================================================| 100%
-#>       dice p_dice   jaccard p_jaccard      mcc p_mcc
-#>1 0.5524716      0 0.3816654         0 0.231789     0
-```
+library(ggpubr)
+library(ggthemes)
+p = wilcox.test(d1$nn1to2$distance, d2$nn2to1$distance)$p.value
+p
+#[1] 1.329531e-207
+compare_df <- data.frame(
+  group1 = "ADA2+ PC",
+  group2 = "ADA2- PC",
+  y.position = 4, 
+  p.adj = p,
+  p.format = "****" 
+)
 
-> **Interpretation**: The expression of *PDGFRA* exhibits a **significant spatial colocalization**  
-> with *Fibroblasts* (*Dice* = 0.55, *p* < 0.001), indicating that *PDGFRA* may mark or functionally associate  
-> with *Fibroblast* populations in this tissue context.
+ggplot()+
+  geom_bar(data = df, aes(x = type, y = mean, fill = type), stat = 'identity', width = 0.35)+
+  geom_errorbar(data = df, aes(x = type, y = mean, ymin = mean-sd, ymax = mean+sd), width = 0.15)+
+  stat_pvalue_manual(compare_df, 
+                     label = "p.format", 
+                     tip.length = 0.05)+
+  ylab("Distance (Avg. ± sd)")+ xlab(NULL)+
+  theme_classic()+
+  theme(legend.position = "none")
+```
+<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/PUMCH_D2_CD27_ADA2_dist.png?raw=true" width="500"/>
+
+> **Interpretation**: *ADA2*⁺ PCs exhibit significantly shorter distances to *CD27*⁺ Bm compared to ADA2⁻ PCs.
 
 
 ---
