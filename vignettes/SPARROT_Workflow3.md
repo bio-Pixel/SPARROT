@@ -184,14 +184,55 @@ P-value was calculated by the Mann-Whitney U test. ****, *P* < 0.0001.
 > **Interpretation**: *ADA2*⁺ PCs exhibit significantly shorter distances to *CD27*⁺ Bm compared to ADA2⁻ PCs.
 
 ---
-# 6. 
+# 6. Comparative Analysis of Spatial Overlap Significance across Spatial Transcriptomics Datasets
+
+To investigate the generalizability of ADA2⁺ plasma cells' spatial association with *CD27*⁺ memory B cells, we applied the spatial overlap significance metric (`evaluate_overlap_metrics`) across 51 spatial transcriptomics datasets. For each sample, we quantified the Dice, Jaccard, and MCC scores between:
+
+- *ADA2*⁺ plasma cells vs. *CD27*⁺ memory B cells  
+- *ADA2*⁻ plasma cells vs. *CD27*⁺ memory B cells  
+
+The data can be downloaded directly from the following link:
+
 **🔗 [PDAC_spatial_stat_CD27_ADA2_dist.rds (.rds)](https://drive.google.com/file/d/1uINdSgHolBu7L6B9bCoGfttiXc4z5a7F/view?usp=drive_link)**
 
+```r
+library(ggpubr)
+library(patchwork)
 
+all <- readRDS("PDAC_spatial_stat_CD27_ADA2_dist.rds")
+
+p1 = ggplot(all, aes(x = cell1, y = dice, fill = cell1))+
+  geom_boxplot(width = 0.4, outliers = F)+
+  stat_compare_means(comparisons = list(unique(all$cell1)), label = "p.signif")+
+  geom_jitter(aes(shape = sig), width = 0.1, color = all$col )+
+  geom_text(label = all$label, color = all$col )+
+  ylab("Dice-Sørensen coefficient")+xlab(NULL)+
+  theme_classic()+
+  theme(legend.position = "none")
+
+p2 = ggplot(all, aes(x = cell1, y = jaccard, fill = cell1))+
+  geom_boxplot(width = 0.4, outliers = F)+
+  stat_compare_means(comparisons = list(unique(all$cell1)), label = "p.signif")+
+  geom_jitter(aes(shape = sig), width = 0.1, color = all$col )+
+  geom_text(label = all$label, color = all$col )+
+  ylab("Jaccard index")+xlab(NULL)+
+  theme_classic()+
+  theme(legend.position = "none")
+
+p3 = ggplot(all, aes(x = cell1, y = mcc, fill = cell1))+
+  geom_boxplot(width = 0.4, outliers = F)+
+  stat_compare_means(comparisons = list(unique(all$cell1)), label = "p.signif")+
+  geom_jitter(aes(shape = sig), width = 0.1, color = all$col )+
+  geom_text(label = all$label, color = all$col )+
+  ylab("Matthews correlation coefficient")+xlab(NULL)+
+  theme_classic()
+p1+p2+p3
+```
 
 <img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/PUMCH_stat.png?raw=true" width="1000"/>
 P-value was calculated by the Mann-Whitney U test. ****, *P* < 0.0001.
 
+> This comparative analysis revealed that *ADA2*⁺ plasma cells tend to have stronger and more consistent spatial overlap with *CD27*⁺ Bm compared to *ADA2*⁻ plasma cells, reinforcing their potential functional and developmental link to local B cell niches.
 ---
 
 ## 📋 Session Info
