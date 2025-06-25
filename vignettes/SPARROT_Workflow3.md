@@ -116,7 +116,7 @@ plotCellType(cc, celltype = "CD27pos_Bm") + coord_fixed()
 plotCellType(cc, celltype = "CD27neg_Bm") + coord_fixed()
 
 ```
-<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/PUMCH_D2_ADA2_CD27cell.png?raw=true" width="500"/>
+<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/PUMCH_D2_ADA2_CD27cell.png?raw=true" width="1000"/>
 We compared the spatial overlap between CD27⁺ memory B cells and ADA2⁺ or ADA2⁻ plasma cells.
 ```r
 evaluate_overlap_metrics(bin1 = cc@meta.data$bin_CD27pos_Bm,
