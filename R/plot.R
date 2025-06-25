@@ -50,7 +50,7 @@ plotCellType <- function(object, celltype, outline = FALSE, pt.size = 1, color =
   return(p)
 }
 
-plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline = TRUE, 
+plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline = TRUE, concavity = 1.5,
                                   color = NULL, coord.fixed = TRUE, legend = TRUE, normalized = TRUE) {
   prob <- object@cell_prob
   meta <- as.data.frame(object@meta.data)
@@ -84,15 +84,16 @@ plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline 
       valid_idx <- which(prob_vec > threshold)      
     }
     
+    
     if (length(valid_idx) > 0) {
       prob_sel <- prob_vec[valid_idx]
       rows <- coords[valid_idx, , drop = FALSE]
       df <- data.frame(row = rows$row, col = rows$col, value = prob_sel)
-      
+      df = rbind(df, c(df$row[1], df$col[1], threshold))
       base <- base +
-        geom_point(data = df, aes(x = row, y = col, alpha = log(value), color = value), size = pt.size) +
-        scale_color_gradientn(colours = c("gray96", colorspace::lighten(color_map[ct], 0.9), color_map[ct]), 
-                              values = c(0, threshold, 1))+
+        geom_point(data = df, aes(x = row, y = col, alpha = value , color = value), size = pt.size) +
+        scale_color_gradientn(colours = c("gray96", colorspace::lighten(color_map[ct], amount = 0.8), color_map[ct]), 
+                              values = c(0,threshold,1))+
         ggnewscale::new_scale_color()
     }
   }
@@ -109,7 +110,7 @@ plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline 
   }
   
   if (outline) {
-    hull_df <- concave_dat(coords)
+    hull_df <- concave_dat(coords, concavity = concavity)
     base <- base + geom_polygon(data = hull_df, aes(x = V1, y = V2), color = "black", alpha = 0)
   }
   
