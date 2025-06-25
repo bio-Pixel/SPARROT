@@ -1,5 +1,5 @@
 
-# 🫀 Spatial Transcriptomics Showcase: Myocardial Infarction Sample (P9)
+# 🫀 Spatial Transcriptomics Showcase: Human Myocardial Infarction, 10x Visium
 
 For this showcase, we utilize spatial transcriptomics data from [Kuppe et al., 2022](https://www.nature.com/articles/s41586-022-05060-x), who generated a comprehensive spatial multi-omic atlas of human myocardial infarction. Specifically, we analyze a 10X Visium spatial slide (P9) representing an ischemic zone of the human heart post-infarction. The Seurat-formatted spatial object can be downloaded directly from the following link:
 
