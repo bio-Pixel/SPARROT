@@ -108,7 +108,7 @@ evaluate_overlap_metrics <- function(bin1, bin2, coords = NULL, bin_size_um = 50
 }
 
 
-evaluate_bidirectional_nn_distance <- function(bin1, bin2, coords, bin_size_um = 50) {
+evaluate_bidirectional_nn_distance <- function(bin1, bin2, coords) {
   stopifnot(length(bin1) == length(bin2))
   bin1 <- as.logical(bin1)
   bin2 <- as.logical(bin2)
@@ -122,9 +122,7 @@ evaluate_bidirectional_nn_distance <- function(bin1, bin2, coords, bin_size_um =
   if (length(idx1) == 0 || length(idx2) == 0) {
     return(data.frame(
       mean_nn1to2_bin = NA, sd_nn1to2_bin = NA, se_nn1to2_bin = NA,
-      mean_nn2to1_bin = NA, sd_nn2to1_bin = NA, se_nn2to1_bin = NA,
-      mean_nn1to2_um = NA, sd_nn1to2_um = NA, se_nn1to2_um = NA,
-      mean_nn2to1_um = NA, sd_nn2to1_um = NA, se_nn2to1_um = NA
+      mean_nn2to1_bin = NA, sd_nn2to1_bin = NA, se_nn2to1_bin = NA
     ))
   }
 
@@ -141,12 +139,11 @@ evaluate_bidirectional_nn_distance <- function(bin1, bin2, coords, bin_size_um =
   sd_nn2to1 <- sd(nn2to1)
   se_nn2to1 <- sd_nn2to1 / sqrt(length(nn2to1))
 
-  data.frame(
-    mean_nn1to2_bin = mean_nn1to2, sd_nn1to2_bin = sd_nn1to2, se_nn1to2_bin = se_nn1to2,
-    mean_nn2to1_bin = mean_nn2to1, sd_nn2to1_bin = sd_nn2to1, se_nn2to1_bin = se_nn2to1,
-    mean_nn1to2_um = mean_nn1to2 * bin_size_um, sd_nn1to2_um = sd_nn1to2 * bin_size_um, se_nn1to2_um = se_nn1to2 * bin_size_um,
-    mean_nn2to1_um = mean_nn2to1 * bin_size_um, sd_nn2to1_um = sd_nn2to1 * bin_size_um, se_nn2to1_um = se_nn2to1 * bin_size_um
+  list(
+    nn1to2 = list(distance = nn1to2, mean_nn1to2_bin = mean_nn1to2, sd_nn1to2_bin = sd_nn1to2, se_nn1to2_bin = se_nn1to2 ),
+    nn2to1 = list(distance = nn2to1, mean_nn2to1_bin = mean_nn2to1, sd_nn2to1_bin = sd_nn2to1, se_nn2to1_bin = se_nn2to1)
   )
+  
 }
 
 #' Compute overlap between gene expression and cell type presence
