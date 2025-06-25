@@ -50,7 +50,7 @@ plotCellType <- function(object, celltype, outline = FALSE, pt.size = 1, color =
   return(p)
 }
 
-plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline = TRUE, concavity = 1.5,
+plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline = TRUE, concavity = 2,
                                   color = NULL, coord.fixed = TRUE, legend = TRUE, normalized = TRUE) {
   prob <- object@cell_prob
   meta <- as.data.frame(object@meta.data)
@@ -135,7 +135,6 @@ plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline 
   }
   return(base)
 }
-
 
 #' Spatial Feature Plot using Nebulosa
 #'
