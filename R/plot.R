@@ -87,7 +87,7 @@ plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline 
       base <- base +
         geom_point(data = df, aes(x = row, y = col, alpha = log(value), color = value), size = pt.size) +
         scale_color_gradientn(colours = c("gray96", colorspace::lighten(color_map[ct], 0.9), color_map[ct]),
-                              values = c(0, threshold, 1))
+                              values = c(0, threshold, 1))+
         ggnewscale::new_scale_color()
     }
   }
