@@ -36,9 +36,9 @@ cc <- readRDS("PUMCH_D2_SparrotObj.rds")
 ### 2. Visualize Multi-celltype Probabilities
 
 ```r
-plotMultiCellTypeProb(cc, celltype = c("GC.B","Bm","PC","KRT19."  ), concavity = 2,
-                      color = c(GC.B = '#FF6A00',Bm = "#2D81FF", PC = "#00B37F", KRT19. = "#A259FF"),
-                      outline = TRUE, coord.fixed = TRUE)
+plotMultiCellTypeProb(cc, celltype = c( "Bm","PC","KRT19."  ), 
+                      color = c( Bm = "#2D81FF", PC = "#00B37F", KRT19. = "#A259FF"),
+                      outline = TRUE, concavity = 2, coord.fixed = TRUE)
 ```
 
 <img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/PUMCH_D2_multiProb-01.png?raw=true" width="500"/>
