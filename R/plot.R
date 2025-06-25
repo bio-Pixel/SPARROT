@@ -50,78 +50,83 @@ plotCellType <- function(object, celltype, outline = FALSE, pt.size = 1, color =
   return(p)
 }
 
-plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline = TRUE, color = NULL, coord.fixed = TRUE, legend = TRUE) {
+plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline = TRUE, 
+                                  color = NULL, coord.fixed = TRUE, legend = TRUE, normalized = TRUE) {
   prob <- object@cell_prob
   meta <- as.data.frame(object@meta.data)
   coords <- as.data.frame(object@coords)
-
+  
   if (is.null(celltype)) {
     celltype <- colnames(prob)
   }
   if (!all(celltype %in% colnames(prob))) {
     stop("Some celltypes not found in cell_prob matrix.")
   }
-
+  
   color_map <- if (!is.null(color)) color else object@params$celltype_colors
-  base <- ggplot() +
-    geom_point(data = coords, aes(x = row, y = col), color = "gray96")
-
+  base <- ggplot()  + geom_point(data = coords, aes(x = row, y = col), color = "gray99")
+  
   for (ct in celltype) {
     prob_vec <- prob[, ct]
-
-    rng <- range(prob_vec, na.rm = TRUE)
-    if (diff(rng) == 0) {
-      prob_vec <- rep(0, length(prob_vec))
-    } else {
-      prob_vec <- (prob_vec - rng[1]) / diff(rng)
+    
+    if(normalized){
+      rng <- range(prob_vec, na.rm = TRUE)
+      if (diff(rng) == 0) {
+        prob_vec <- rep(0, length(prob_vec))
+      } else {
+        prob_vec <- (prob_vec - rng[1]) / diff(rng)
+      }
+      
+      threshold <- find_main_valley_threshold(prob_vec)
+      valid_idx <- which(prob_vec > threshold)
+    }else{
+      threshold <- find_main_valley_threshold(prob_vec)
+      valid_idx <- which(prob_vec > threshold)      
     }
-
-    threshold <- find_main_valley_threshold(prob_vec)
-    valid_idx <- which(prob_vec > threshold)
-
+    
     if (length(valid_idx) > 0) {
       prob_sel <- prob_vec[valid_idx]
       rows <- coords[valid_idx, , drop = FALSE]
       df <- data.frame(row = rows$row, col = rows$col, value = prob_sel)
-
+      
       base <- base +
         geom_point(data = df, aes(x = row, y = col, alpha = log(value), color = value), size = pt.size) +
-        scale_color_gradientn(colours = c("gray96", colorspace::lighten(color_map[ct], 0.9), color_map[ct]),
+        scale_color_gradientn(colours = c("gray96", colorspace::lighten(color_map[ct], 0.9), color_map[ct]), 
                               values = c(0, threshold, 1))+
         ggnewscale::new_scale_color()
     }
   }
-
+  
   base <- base +
     theme_bw() +
     theme(legend.position = "none",
           axis.title = element_blank(),
           axis.ticks = element_blank(),
           axis.text = element_blank())
-
+  
   if (coord.fixed) {
     base <- base + coord_fixed()
   }
-
+  
   if (outline) {
     hull_df <- concave_dat(coords)
     base <- base + geom_polygon(data = hull_df, aes(x = V1, y = V2), color = "black", alpha = 0)
   }
-
-  if (outline) {
+  
+  if (legend) {
     legend_df <- data.frame(
       row = seq_along(celltype),
       col = 1,
       celltype = factor(celltype, levels = celltype)
     )
-  
+    
     legend_layer <- ggplot(legend_df, aes(x = row, y = col, color = celltype)) +
       guides(color = guide_legend(override.aes = list(alpha = 1))) +
       geom_point(size = 3) +
       scale_color_manual(values = color_map[celltype]) +
       theme_void() +
       theme(legend.position = "right")
-  
+    
     legend_plot <- cowplot::get_legend(legend_layer)
     base <- cowplot::ggdraw() +
       cowplot::draw_plot(base, 0, 0, 0.85, 1) +
@@ -129,6 +134,7 @@ plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline 
   }
   return(base)
 }
+
 
 #' Spatial Feature Plot using Nebulosa
 #'
