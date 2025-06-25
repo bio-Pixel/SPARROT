@@ -33,7 +33,7 @@ cc <- readRDS("PUMCH_D2_SparrotObj.rds")
 
 ---
 
-### 2. Visualize Multi-celltype Probabilities
+### 2. Visualize Probabilities of Memory B Cell (Bm), Plasma Cell (PC), and KRT19+ Cell (Tumor)
 
 ```r
 plotMultiCellTypeProb(cc, celltype = c( "Bm","PC","KRT19."  ), 
