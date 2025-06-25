@@ -76,38 +76,67 @@ computeGeneCelltypeOverlap(cc, "CD27", "Bm")
 > The positive MCC further indicates that *CD27*⁺ expression is preferentially enriched in Bm-dominated regions,
 > consistent with *CD27* being a canonical marker for Memory B cells.
 ---
-### 4. Evaluation of Spatial Co-localization of Cardiomyocytes with Fibroblasts/Endothelial cells
-*evaluate_overlap_metrics()* evaluates the spatial overlap between two binary spatial patterns — for instance, between two cell types or between a gene expression region and a cell type — in spatial transcriptomics data. It computes both the **overlap scores (Dice-Sørensen coefficient, Jaccard index, Matthews correlation coefficient)** and **permutation-based p-values** to assess statistical significance.
-
+### 4. Joint Binarized Spatial Domains of *ADA2*⁺ Plasma and *CD27*⁺ Memory B Cells
+To investigate spatial interactions between *ADA2*⁺ plasma cells and *CD27*⁺ memory B cells, we first binarized gene expression using a Gaussian Mixture Model (GMM)-based thresholding. We then defined four spatially restricted subpopulations: *ADA2*⁺ and *ADA2*⁻ plasma cells, and *CD27*⁺ and *CD27*⁻ memory B cells. Spatial distributions of these subpopulations were visualized, and their proximity was quantified using a bidirectional nearest-neighbor distance metric to assess potential lineage relationships or spatial associations.
 ```r
-evaluate_overlap_metrics(bin1 = as.logical(cc@meta.data[, "bin_Cardiomyocyte"]),
-                         bin2 = as.logical(cc@meta.data[, "bin_Fibroblast"]),
+# Binarize ADA2 expression using Gaussian Mixture Model (GMM)
+ADA2_bin = as.logical(binarizeByGMM(cc@expr["ADA2",]))
+
+# Define ADA2-positive plasma cells (ADA2⁺ PC) by intersecting ADA2⁺ and plasma cell annotations
+ADA2pos_PC = as.logical(cc@meta.data$bin_PC)
+ADA2pos_PC[!ADA2_bin] = FALSE
+
+# Define ADA2-negative plasma cells (ADA2⁻ PC) by excluding ADA2⁺ from plasma cells
+ADA2neg_PC = as.logical(cc@meta.data$bin_PC)
+ADA2neg_PC[ADA2_bin] = FALSE
+
+# Store binary indicators in metadata
+cc@meta.data$bin_ADA2pos_PC = as.numeric(ADA2pos_PC)
+cc@meta.data$bin_ADA2neg_PC = as.numeric(ADA2neg_PC)
+
+# Repeat the same procedure for CD27 expression and memory B cells
+CD27_bin = as.logical(binarizeByGMM(cc@expr["CD27",]))
+
+# Define CD27-positive memory B cells (CD27⁺ Bm)
+CD27pos_Bm = as.logical(cc@meta.data$bin_Bm)
+CD27pos_Bm[!CD27_bin] = FALSE
+
+# Define CD27-negative memory B cells (CD27⁻ Bm)
+CD27neg_Bm = as.logical(cc@meta.data$bin_Bm)
+CD27neg_Bm[CD27_bin] = FALSE
+
+# Store binary indicators in metadata
+cc@meta.data$bin_CD27pos_Bm = as.numeric(CD27pos_Bm)
+cc@meta.data$bin_CD27neg_Bm = as.numeric(CD27neg_Bm)
+
+# Visualize the spatial distribution of each subpopulation
+plotCellType(cc, celltype = "ADA2pos_PC") + coord_fixed()
+plotCellType(cc, celltype = "ADA2neg_PC") + coord_fixed()
+plotCellType(cc, celltype = "CD27pos_Bm") + coord_fixed()
+plotCellType(cc, celltype = "CD27neg_Bm") + coord_fixed()
+
+```
+<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/PUMCH_D2_ADA2_CD27cell.png?raw=true" width="500"/>
+We compared the spatial overlap between CD27⁺ memory B cells and ADA2⁺ or ADA2⁻ plasma cells.
+```r
+evaluate_overlap_metrics(bin1 = cc@meta.data$bin_CD27pos_Bm,
+                         bin2 = cc@meta.data$bin_ADA2pos_PC,
+                         coords = cc@coords)
+```
+```r
+#>       dice p_dice  jaccard p_jaccard      mcc p_mcc
+#>1 0.4753053      0 0.311738         0 0.315965     0
+```
+```r
+evaluate_overlap_metrics(bin1 = cc@meta.data$bin_CD27pos_Bm,
+                         bin2 = cc@meta.data$bin_ADA2neg_PC,
                          coords = cc@coords)
 ```
 ```r
 #>       dice p_dice   jaccard p_jaccard        mcc p_mcc
-#>1 0.3724632      1 0.2288509         1 -0.4687531     1
+#>1 0.2381575      1 0.1351753         1 -0.2510521     1
 ```
-
-> **Interpretation**: Although *Cardiomyocytes* and *Fibroblasts* show moderate spatial overlap (*Dice* = 0.37),  
-> the lack of statistical significance (*p* = 1) and a negative *MCC* suggest their distributions are likely  
-> **mutually exclusive** in this tissue region and **not spatially co-localized beyond chance**.
-
-```r
-evaluate_overlap_metrics(bin1 = as.logical(cc@meta.data[, "bin_Cardiomyocyte"]),
-                         bin2 = as.logical(cc@meta.data[, "bin_Endothelial"]),
-                         coords = cc@coords)
-```
-```r
-#>       dice p_dice   jaccard p_jaccard       mcc p_mcc
-#>1 0.6410665      0 0.4717423         0 0.1813916     0
-```
-
-> **Interpretation**: *Cardiomyocytes* and *Endothelial cells* exhibit a **strong spatial overlap**  
-> (*Dice* = 0.64, *Jaccard* = 0.47), with all permutation-based p-values < 0.001.  
-> This indicates a **statistically significant co-localization**, suggesting these two cell types  
-> may occupy shared niches or interact closely in the infarct zone.
-
+> **Interpretation**:  Spatial overlap metrics revealed that *CD27*⁺ memory B cells are significantly co-localized with *ADA2*⁺ plasma cells (Dice = 0.48, MCC = 0.32, p < 0.001), while showing no overlap and even spatial exclusion with *ADA2*⁻ plasma cells (MCC = –0.25, p = 1), supporting a local differentiation origin of *ADA2*⁺ plasma cells within the immune microenvironment.
 ---
 
 ### 6. Evaluation of Spatial Co-localization of Cardiomyocytes with Gene Expression
