@@ -90,7 +90,7 @@ p1+p2+p3
 ```r
 plotMultiCellTypeProb(cc, celltype = c("Endothelial", "Fibroblast", "Cardiomyocyte"),
                       color = c(Cardiomyocyte = "#2D81FF", Fibroblast = "#00B37F", Endothelial = "#FF6A00"),
-                      outline = FALSE, coord.fixed = TRUE)
+                      outline = T, concavity = 2, coord.fixed = TRUE)
 ```
 
 <img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/P9_cardio_prop.png?raw=true" width="500"/>
