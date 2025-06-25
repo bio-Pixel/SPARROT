@@ -69,7 +69,7 @@ cc
 ```r
 plotMultiCellTypeProb(cc, celltype =c('T_CD4._naive', 'B_naive', 'FDC'),
                       color = c(`T_CD4._naive` = "#2D81FF", B_naive = "#00B37F", FDC = '#FF6A00'),
-                      outline = F, coord.fixed = T) 
+                      outline = T, concavity = 2, coord.fixed = T) 
 ```
 
 <img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/LM_Miltiprop.png?raw=true" width="500"/>
