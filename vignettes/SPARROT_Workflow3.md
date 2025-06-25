@@ -1,101 +1,47 @@
+# 🩺 Spatial Transcriptomics Showcase: Human Pancreatic Ductal Adenocarcinoma, Stereo-seq
 
-# 🧠 SPARROT Case Study  
+The pathological tumor size was 21 mm, with evidence of neural, vesicle, and para-pancreatic infiltration.The patient is a 58-year-old male diagnosed with moderately differentiated pancreatic ductal adenocarcinoma (PDAC) located in the head of the pancreas. To investigate the spatial architecture of the tumor microenvironment, we performed spatial transcriptomic profiling using the **Stereo-seq** on this patient's resected tumor tissue. Genetic testing revealed a KRAS G12R mutation.. The SPARROT-formatted object with cell type composition, estimated using *Tangram*, can be downloaded directly from the following link:
 
-# Spatial Transcriptomics Showcase: Myocardial Infarction Sample (P9)
-
-For this showcase, we utilize spatial transcriptomics data from [Kuppe et al., 2022](https://www.nature.com/articles/s41586-022-05060-x), who generated a comprehensive spatial multi-omic atlas of human myocardial infarction. Specifically, we analyze a 10X Visium spatial slide (P9) representing an ischemic zone of the human heart post-infarction. The Seurat-formatted spatial object can be downloaded directly from the following link:
-
-**🔗 [10X_Visium_ACH0012.tar.gz (Zenodo)](https://zenodo.org/records/6580069/files/10X_Visium_ACH0012.tar.gz?download=1)**
-
-The corresponding cell type composition, estimated using *cell2location*, is available at:
-
-**🔗 [cell2location annotations (.rds)](https://drive.google.com/file/d/1YWocGsNZ929NKrZP0Jbfi-iBG9c2JR4j/view?usp=drive_link)**
+**🔗 [PUMCH_D2_SparrotObj.rds (.rds)](https://drive.google.com/file/d/18OnrCikbKFvYnGHvR0oBA5EKH94DrORf/view?usp=sharing)**
 
 ---
 
 ## 📦 Workflow Summary
 
-### 1. Load data and create `SparrotObj`
+### 1. Load data `SparrotObj`
 
 ```r
 library(SPARROT)
 library(Seurat)
 library(ggplot2)
 
-# Load Seurat spatial transcriptomics object 
-seu <- readRDS("ACH0012.rds")
-```
-```r
-# Load cell-type deconvolution matrix 
-cpm <- readRDS("P9_CellProb_cell2location.rds")
-view(cpm)
-```
-<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/P9_cpm.png?raw=true" width="1000"/>
-
-
-```r
-identical(colnames(seu), rownames(cpm))
-```
-```r
-#> [1] TRUE
-```
-
-Create SPARROT object from Seurat object:
-```r
-cc <- convertSeuratToSparrot(seu, cell_prob = cpm)
-```
-You can also create the SPARROT object by:
-```r
-cc = createSparrotObj(coords = GetTissueCoordinates(seu),
-                      cell_prob = cpm,
-                      expr = GetAssayData(seu, layer = 'data'))
-cc
+# Load SparrotObj 
+cc <- readRDS("PUMCH_D2_SparrotObj.rds")
 ```
 ```r
 #> An object of class 'SparrotObj'
-#> 
-#> Number of spots/cells:  4361 
-#> Number of genes:        15972 
-#> Number of cell types:   11 
+
+#> Number of spots/cells:  14036 
+#> Number of genes:        19409 
+#> Number of cell types:   31 
 #> Meta data columns:
 #>   • coords:     row, col 
-#>   • binarized:  bin_Adipocyte, bin_Cardiomyocyte, bin_Endothelial, bin_Fibroblast, bin_Lymphoid, bin_Mast, bin_Myeloid, bin_Neuronal, bin_Pericyte, bin_Cycling.cells, bin_vSMCs 
-#> 
+#>   • binarized:  bin_KRT19., bin_CD8..T, bin_Fibroblast, bin_ADM, bin_Acinar, bin_Macrophage, bin_EC, bin_CD4..Th, bin_Ductal, bin_SMC, bin_Endocrine, bin_Treg, bin_Bm, bin_Neutrophil, bin_PC, bin_Tn, bin_Bn, bin_Stellate, bin_Mast, bin_NK, #>#>  bin_Monocyte, bin_CD4..Tfh, bin_DC, bin_Schwann, bin_NKT, bin_MDSC, bin_ILC, bin_Tuft, bin_GC.B, bin_Proliferating, bin_Adipocyte 
+
 #> Use @meta.data, @expr, @cell_prob, or accessor methods to explore.
 ```
 
 ---
-### 2. Visualize celltype Probability
+
+### 2. Visualize Multi-celltype Probabilities
 
 ```r
-p1 = plotCellTypeProb(cc, celltype = "Fibroblast")+
-      coord_fixed()+
-      ggtitle("Fibroblast")+ xlab(NULL)+ ylab(NULL)+
-      theme_bw()+
-      theme(axis.ticks = element_blank(),
-            axis.text = element_blank())
-
-p3 = plotCellTypeProb(cc, celltype = "Endothelial")+
-  coord_fixed()+
-  ggtitle("Endothelial")+ xlab(NULL)+ ylab(NULL)+
-  theme_bw()+
-  theme(axis.ticks = element_blank(),
-        axis.text = element_blank())
-library(patchwork)
-p1+p2+p3
-
-```
-<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/P9_cardio_FCardioprop.png?raw=true" width="1000"/>
-
-### 3. Visualize Multi-celltype Probabilities
-
-```r
-plotMultiCellTypeProb(cc, celltype = c("Endothelial", "Fibroblast", "Cardiomyocyte"),
-                      color = c(Cardiomyocyte = "#2D81FF", Fibroblast = "#00B37F", Endothelial = "#FF6A00"),
-                      outline = FALSE, coord.fixed = TRUE)
+plotMultiCellTypeProb(cc, celltype = c("GC.B","Bm","PC","KRT19."  ), concavity = 2,
+                      color = c(GC.B = '#FF6A00',Bm = "#2D81FF", PC = "#00B37F", KRT19. = "#A259FF"),
+                      outline = TRUE, coord.fixed = TRUE)
 ```
 
-<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/P9_cardio_prop.png?raw=true" width="500"/>
+<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/PUMCH_D2_multiProb-01.png?raw=true" width="500"/>
 
 ---
 
