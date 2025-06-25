@@ -64,7 +64,7 @@ cc
 ```
 
 ---
-### 2. Visualize Multi-celltype Probabilities
+### 2. Visualize Probabilities of Naive CD4+ T Cell (T_CD4._naive), Naive B Cell (B_naive), and Follicular Dendritic Cell (FDC)
 
 ```r
 plotMultiCellTypeProb(cc, celltype =c('T_CD4._naive', 'B_naive', 'FDC'),
