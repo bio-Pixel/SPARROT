@@ -178,7 +178,7 @@ ggplot()+
   theme_classic()+
   theme(legend.position = "none")
 ```
-<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/PUMCH_D2_CD27_ADA2_dist.png?raw=true" width="500"/>
+<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/PUMCH_D2_CD27_ADA2_dist.png?raw=true" width="200"/>
 
 > **Interpretation**: *ADA2*⁺ PCs exhibit significantly shorter distances to *CD27*⁺ Bm compared to ADA2⁻ PCs.
 
