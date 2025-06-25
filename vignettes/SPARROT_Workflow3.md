@@ -179,7 +179,8 @@ ggplot()+
   theme(legend.position = "none")
 ```
 <img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/PUMCH_D2_CD27_ADA2_dist.png?raw=true" width="200"/>
-*P*-value was calculated by the Mann-Whitney U test. ****, *P* < 0.0001.
+> *P*-value was calculated by the Mann-Whitney U test. ****, *P* < 0.0001.
+
 > **Interpretation**: *ADA2*⁺ PCs exhibit significantly shorter distances to *CD27*⁺ Bm compared to ADA2⁻ PCs.
 
 ---
