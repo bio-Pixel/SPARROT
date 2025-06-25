@@ -33,7 +33,7 @@ cc <- readRDS("PUMCH_D2_SparrotObj.rds")
 
 ---
 
-### 2. Visualize Probabilities of Memory B Cell (Bm), Plasma Cell (PC), and KRT19+ Cell (Tumor)
+### 2. Visualize Probabilities of Memory B Cells (Bm), Plasma Cells (PC), and KRT19+ Cells (Tumor)
 
 ```r
 plotMultiCellTypeProb(cc, celltype = c( "Bm","PC","KRT19."  ), 
@@ -45,17 +45,38 @@ plotMultiCellTypeProb(cc, celltype = c( "Bm","PC","KRT19."  ),
 
 ---
 
-### 4. Visualize Gene expression density 
+### 3. Evaluation of Spatial Co-localization of Plasma Cells with *ADA2* Expression and Memory B Cells with *CD27* Expression
 
 ```r
-spFeatureDensityPlot(cc, features = c("PDGFRA","RYR2","PECAM1"), outline = F)
+computeGeneCelltypeOverlap(cc, "ADA2", "PC")
 ```
-
-<img src="https://github.com/bio-Pixel/SPARROT/blob/main/vignettes/P9_cardio_expr.png?raw=true" width="1000"/>
-
+```r
+#> fitting ...
+#>  |================================================================================================| 100%
+#>       dice p_dice   jaccard p_jaccard       mcc p_mcc
+#> 1 0.3823684      0 0.2363755         0 0.1575453     0
+```
+```r
+computeGeneCelltypeOverlap(cc, "CD27", "Bm")
+```
+```r
+#> fitting ...
+#> |================================================================================================| 100%
+#> dice p_dice   jaccard p_jaccard       mcc p_mcc
+#>1 0.2966482      0 0.1741556         0 0.1898258     0
+```
+> **Interpretation**:  *ADA2* shows spatial overlap with Plasma Cells.
+> All permutation p-values are statistically significant (p < 0.001), indicating that
+> *ADA2* expression is non-randomly enriched in spatial locations occupied by Plasma Cells.
+> The positive MCC further supports a true spatial association, suggesting that *ADA2*⁺ PCs may represent a
+> distinct spatial or functional subpopulation within the tissue.
+> 
+> **Interpretation**:  *CD27* exhibits spatial co-localization with Memory B cells (Bm).
+> All overlap metrics are statistically significant (p < 0.001), supporting a non-random spatial relationship.
+> The positive MCC further indicates that *CD27*⁺ expression is preferentially enriched in Bm-dominated regions,
+> consistent with *CD27* being a canonical marker for Memory B cells.
 ---
-
-### 5. Evaluation of Spatial Co-localization of Cardiomyocytes with Fibroblasts/Endothelial cells
+### 4. Evaluation of Spatial Co-localization of Cardiomyocytes with Fibroblasts/Endothelial cells
 *evaluate_overlap_metrics()* evaluates the spatial overlap between two binary spatial patterns — for instance, between two cell types or between a gene expression region and a cell type — in spatial transcriptomics data. It computes both the **overlap scores (Dice-Sørensen coefficient, Jaccard index, Matthews correlation coefficient)** and **permutation-based p-values** to assess statistical significance.
 
 ```r
