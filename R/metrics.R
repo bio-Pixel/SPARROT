@@ -42,19 +42,19 @@ computePairwiseCelltypeOverlap <- function(object, metric = c("dice", "jaccard",
 }
 
 
-#' Evaluate overlap metrics (Dice, Jaccard, MCC) with permutation test
+#' Evaluate spatial overlap metrics with permutation test
 #'
-#' @param bin1 Logical vector
-#' @param bin2 Logical vector
-#' @param coords Optional coordinate matrix for Chebyshev expansion
-#' @param bin_size_um Bin size in microns (optional, for future)
-#' @param expand_bin_dist Expansion distance in bins
+#' @param bin1 First logical vector
+#' @param bin2 Second logical vector
+#' @param coords Coordinate matrix
+#' @param expand_bin_dist Chebyshev expansion distance
 #' @param n_perm Number of permutations
 #' @param seed Random seed
-#' @param perm_index_mat Optional matrix of precomputed permutation indices (rows = elements, cols = permutations)
-#' @return Data frame with Dice, Jaccard, MCC and permutation p-values
+#' @param perm_index_mat Optional precomputed index matrix
+#'
+#' @return Data frame with Dice, Jaccard, MCC and p-values
 #' @export
-evaluate_overlap_metrics <- function(bin1, bin2, coords = NULL, bin_size_um = 50,
+evaluate_overlap_metrics <- function(bin1, bin2, coords = NULL,
                                      expand_bin_dist = 1, n_perm = 1000, seed = 123,
                                      perm_index_mat = NULL) {
   set.seed(seed)
@@ -107,7 +107,14 @@ evaluate_overlap_metrics <- function(bin1, bin2, coords = NULL, bin_size_um = 50
   )
 }
 
-
+#' Compute bidirectional nearest-neighbor distances between two binary groups
+#'
+#' @param bin1 Logical vector
+#' @param bin2 Logical vector
+#' @param coords Matrix of spatial coordinates
+#'
+#' @return A list with distance vectors and summary statistics
+#' @export
 evaluate_bidirectional_nn_distance <- function(bin1, bin2, coords) {
   stopifnot(length(bin1) == length(bin2))
   bin1 <- as.logical(bin1)
@@ -148,10 +155,11 @@ evaluate_bidirectional_nn_distance <- function(bin1, bin2, coords) {
 
 #' Compute overlap between gene expression and cell type presence
 #'
-#' @param object A SparrotObj object
-#' @param gene A gene symbol (character)
-#' @param celltype A cell type name matching object@celltypes
-#' @return A data frame with Dice, Jaccard, and MCC metrics
+#' @param object A SparrotObj
+#' @param gene Gene name
+#' @param celltype Cell type name
+#'
+#' @return Data frame with Dice, Jaccard, and MCC values
 #' @export
 computeGeneCelltypeOverlap <- function(object, gene, celltype) {
   if (!gene %in% rownames(object@expr)) {

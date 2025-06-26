@@ -1,4 +1,9 @@
-
+#' Binarize numeric vector using GMM
+#'
+#' @param score_vector A numeric vector
+#'
+#' @return Integer vector (0/1)
+#' @export
 binarizeByGMM <- function(score_vector) {
   if (!is.numeric(score_vector)) {
     stop("Input must be a numeric vector")
@@ -13,6 +18,12 @@ binarizeByGMM <- function(score_vector) {
   return(binary_label)
 }
 
+#' Find threshold between main valley in density
+#'
+#' @param score_vector Numeric vector
+#'
+#' @return Numeric threshold
+#' @export
 find_main_valley_threshold <- function(score_vector) {
   dens <- density(score_vector)
   y_vals <- dens$y
@@ -43,6 +54,13 @@ find_main_valley_threshold <- function(score_vector) {
   return(threshold)
 }
 
+#' Classify by main valley threshold
+#'
+#' @param score_vector Numeric vector
+#' @param plot Whether to show density plot
+#'
+#' @return Integer vector (0/1)
+#' @export
 classify_by_main_valley <- function(score_vector, plot = FALSE) {
   threshold <- find_main_valley_threshold(score_vector)
   labels <- as.integer(score_vector > threshold)

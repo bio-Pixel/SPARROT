@@ -1,5 +1,11 @@
-
-concave_dat <- function(coords, concavity = 1) {
+#' Compute concave hull of coordinate set
+#'
+#' @param coords Matrix of 2D coordinates
+#' @param concavity Concavity parameter (lower = smoother)
+#'
+#' @return A data.frame of polygon coordinates
+#' @export
+concave_dat <- function(coords, concavity = 2) {
   df <- coords
   colnames(df) <- c("x", "y")
   hull_df <- as.data.frame(concaveman::concaveman(as.matrix(df), concavity = concavity))
@@ -7,6 +13,15 @@ concave_dat <- function(coords, concavity = 1) {
   return(hull_df)
 }
 
+#' Plot probability of a single cell type
+#'
+#' @param object SparrotObj
+#' @param celltype Cell type to plot
+#' @param outline Whether to add concave outline
+#' @param pt.size Point size
+#'
+#' @return A ggplot object
+#' @export
 plotCellTypeProb <- function(object, celltype, outline = FALSE, pt.size = 1) {
   if (!celltype %in% object@celltypes) {
     stop(paste("Cell type", celltype, "not found in object@celltypes"))
@@ -28,6 +43,16 @@ plotCellTypeProb <- function(object, celltype, outline = FALSE, pt.size = 1) {
   return(p)
 }
 
+#' Plot binarized presence of a cell type
+#'
+#' @param object SparrotObj
+#' @param celltype Cell type to plot
+#' @param outline Whether to add outline
+#' @param pt.size Point size
+#' @param color Color for present cells
+#'
+#' @return A ggplot object
+#' @export
 plotCellType <- function(object, celltype, outline = FALSE, pt.size = 1, color = "red") {
   bin_col <- paste0("bin_", celltype)
   if (!bin_col %in% colnames(object@meta.data)) {
@@ -50,6 +75,19 @@ plotCellType <- function(object, celltype, outline = FALSE, pt.size = 1, color =
   return(p)
 }
 
+#' Plot multiple cell type probabilities with normalized alpha+color blending
+#'
+#' @param object SparrotObj
+#' @param celltype Cell types to plot
+#' @param pt.size Point size
+#' @param outline Whether to add outline
+#' @param color Optional named color map
+#' @param coord.fixed Fix aspect ratio
+#' @param legend Whether to add legend
+#' @param normalized Normalize probability values to 0-1
+#'
+#' @return A ggplot object or cowplot
+#' @export
 plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline = TRUE, concavity = 2,
                                   color = NULL, coord.fixed = TRUE, legend = TRUE, normalized = TRUE) {
   prob <- object@cell_prob
@@ -136,11 +174,18 @@ plotMultiCellTypeProb <- function(object, celltype = NULL, pt.size = 1, outline 
   return(base)
 }
 
-#' Spatial Feature Plot using Nebulosa
+#' Plot spatial feature density using Nebulosa
 #'
-#' @param object A SparrotObj object
-#' @param features Character vector of gene names
-#' @return A ggplot object from Nebulosa::plot_density
+#' @param object A SparrotObj
+#' @param features Vector of gene names
+#' @param outline Add concave outline
+#' @param raster Rasterize points
+#' @param pt.size Point size
+#' @param method Kernel method ("ks", "wkde")
+#' @param joint Joint density
+#' @param ncol Number of columns for multiple plots
+#'
+#' @return A ggplot object
 #' @export
 spFeatureDensityPlot <- function(object, features, outline = TRUE, raster = TRUE, pt.size = 1,
                          method = c("ks", "wkde"), joint = FALSE, ncol = NULL) {

@@ -1,4 +1,11 @@
-
+#' Expand binarized region by Chebyshev distance
+#'
+#' @param bin_vec A logical vector
+#' @param coords A matrix of spatial coordinates
+#' @param max_bin_dist Maximum Chebyshev distance to expand
+#'
+#' @return A logical vector of expanded region
+#' @export
 expand_bin_chebyshev <- function(bin_vec, coords, max_bin_dist = 1) {
   stopifnot(length(bin_vec) == nrow(coords))
 
@@ -23,6 +30,16 @@ expand_bin_chebyshev <- function(bin_vec, coords, max_bin_dist = 1) {
   return(expanded_bin)
 }
 
+#' Plot expanded Chebyshev region
+#'
+#' @param bin_vec Logical vector of binary labels
+#' @param coords Matrix of coordinates
+#' @param max_bin_dist Expansion distance in bins
+#' @param pt.size Point size
+#' @param coord.fixed Whether to fix aspect ratio
+#'
+#' @return A ggplot object
+#' @export
 plot_expand_chebyshev <- function(bin_vec, coords, max_bin_dist = 1, pt.size = 3, coord.fixed = TRUE) {
   expanded_bin <- expand_bin_chebyshev(bin_vec, coords, max_bin_dist)
   df <- data.frame(

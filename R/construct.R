@@ -1,4 +1,18 @@
+# SPARROT R package documentation help file snippets
+# You can include these in the corresponding .R files or roxygen-style headers for each function
 
+#' Create a SparrotObj object
+#'
+#' @description Create a new SparrotObj containing coordinates, expression, cell type probabilities, and metadata.
+#'
+#' @param coords A matrix of spatial coordinates (row, col).
+#' @param expr A gene expression matrix (dgCMatrix).
+#' @param cell_prob A numeric matrix of cell type probabilities.
+#' @param meta.data Optional metadata as a DataFrame.
+#' @param params A list of additional parameters.
+#'
+#' @return An object of class SparrotObj
+#' @export
 createSparrotObj <- function(coords, expr, cell_prob, meta.data = NULL, params = list()) {
   coords <- as.matrix(coords)
   colnames(coords) <- c("row", "col")
@@ -55,6 +69,16 @@ createSparrotObj <- function(coords, expr, cell_prob, meta.data = NULL, params =
       params = params)
 }
 
+#' Convert a Seurat object to a SparrotObj
+#'
+#' @param seurat_obj A Seurat object with spatial coordinates
+#' @param cell_prob A matrix of cell type probabilities
+#' @param expr_slot Expression slot to extract (e.g., "data")
+#' @param assay Assay name (defaults to DefaultAssay())
+#' @param params A list of additional parameters
+#'
+#' @return A SparrotObj
+#' @export
 convertSeuratToSparrot <- function(seurat_obj, cell_prob, expr_slot = "data", assay = NULL, params = list()) {
   if (!requireNamespace("Seurat", quietly = TRUE)) {
     stop("Seurat package is required.")
